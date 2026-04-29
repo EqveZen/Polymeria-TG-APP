@@ -186,7 +186,7 @@
             pulseElement(ui.stars);
 
             // Цвет энергии: красный если меньше 10
-            if (state.energy < 10) {
+            if (state.energy < 40) {
                 ui.energy.style.color = '#cc0000';
                 ui.energy.style.textShadow = '0 0 6px #cc0000';
             } else {
