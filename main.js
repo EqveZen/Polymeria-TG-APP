@@ -183,7 +183,7 @@
             updateUI();
         }
 
-        // Инициализация
+// Инициализация
         function init() {
             loadGame();
             setInterval(autoCollect, 1000);
@@ -202,38 +202,56 @@
             const introModal = document.getElementById('intro-modal');
             const btnStart = document.getElementById('btn-start-shift');
 
-            if (!introModal || !btnStart) return;
-
-            function closeIntro() {
-                introModal.classList.add('hidden');
-                // Сохраняем флаг
-                if (window.Polymeria.cloudAvailable) {
-                    window.Telegram.WebApp.CloudStorage.setItem('polymeria_intro_shown', '1', () => {});
+            if (introModal && btnStart) {
+                function closeIntro() {
+                    introModal.classList.add('hidden');
+                    if (window.Polymeria.cloudAvailable) {
+                        window.Telegram.WebApp.CloudStorage.setItem('polymeria_intro_shown', '1', () => {});
+                    }
+                    localStorage.setItem('polymeria_intro_shown', '1');
                 }
-                localStorage.setItem('polymeria_intro_shown', '1');
+
+                btnStart.onclick = closeIntro;
+
+                if (localStorage.getItem('polymeria_intro_shown') === '1') {
+                    introModal.classList.add('hidden');
+                } else if (window.Polymeria.cloudAvailable) {
+                    window.Telegram.WebApp.CloudStorage.getItem('polymeria_intro_shown', (err, value) => {
+                        if (value === '1') {
+                            localStorage.setItem('polymeria_intro_shown', '1');
+                            introModal.classList.add('hidden');
+                        } else {
+                            introModal.classList.remove('hidden');
+                        }
+                    });
+                } else {
+                    introModal.classList.remove('hidden');
+                }
             }
 
-            // Обработчик на кнопку
-            btnStart.onclick = closeIntro;
+            // Навигация
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const tabs = document.querySelectorAll('.tab-content');
 
-            // Проверка — показывать или нет
-            if (localStorage.getItem('polymeria_intro_shown') === '1') {
-                introModal.classList.add('hidden');
-                return;
-            }
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.getAttribute('data-tab');
 
-            if (window.Polymeria.cloudAvailable) {
-                window.Telegram.WebApp.CloudStorage.getItem('polymeria_intro_shown', (err, value) => {
-                    if (value === '1') {
-                        localStorage.setItem('polymeria_intro_shown', '1');
-                        introModal.classList.add('hidden');
-                    } else {
-                        introModal.classList.remove('hidden');
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    tabs.forEach(tab => {
+                        tab.classList.add('hidden');
+                        tab.classList.remove('active');
+                    });
+
+                    const targetTab = document.getElementById('tab-' + tabName);
+                    if (targetTab) {
+                        targetTab.classList.remove('hidden');
+                        targetTab.classList.add('active');
                     }
                 });
-            } else {
-                introModal.classList.remove('hidden');
-            }
+            });
         }
 
         // Экспорт

@@ -8,6 +8,9 @@
 </head>
 <body>
 <div id="app">
+    <!-- Контейнер пульта (видим по умолчанию) -->
+    <div id="tab-control" class="tab-content active">
+
     <!-- Верхняя панель с названием и лампой смены -->
     <header class="panel control-panel">
         <div class="panel-title">
@@ -38,7 +41,7 @@
         </div>
     </div>
 
-    <!-- Главная красная кнопка (без молнии) -->
+    <!-- Главная красная кнопка -->
     <div class="panel action-panel">
         <button id="btn-harvest" class="big-red-button">
             ДОБЫТЬ ПОЛИМЕР
@@ -66,7 +69,6 @@
             <span class="switch-knob"></span> ЗАПУСТИТЬ РОБОТА
         </button>
 
-        <!-- Конвертация: очистка неочищенного полимера -->
         <div class="conversion-section">
             <div class="conversion-info">
                 <span>Очистка: 100 неочищенного → 1 очищенный</span>
@@ -88,44 +90,47 @@
         <small>Ближайшая проверка: <span id="next-collapse-time">--</span></small>
     </div>
 
+    </div><!-- конец tab-control -->
+
+    <!-- Заглушка: Задачи -->
+    <div id="tab-tasks" class="tab-content hidden">
+        <div class="panel placeholder-panel">
+            <h2>📋 ЗАДАЧИ</h2>
+            <p>Список задач появится здесь.</p>
+        </div>
+    </div>
+
+    <!-- Заглушка: Профиль -->
+    <div id="tab-profile" class="tab-content hidden">
+        <div class="panel placeholder-panel">
+            <h2>👤 ПРОФИЛЬ ИНЖЕНЕРА</h2>
+            <p>Личное дело появится здесь.</p>
+        </div>
+    </div>
+
     <!-- Модальное окно коллапса -->
     <div id="collapse-modal" class="modal hidden"></div>
 
-    <footer class="panel debug">
-        <small>Polymeria v0.3 | Пульт управления | Москва, 1955 (альт.)</small>
-    </footer>
-<!-- Приветственное окно (обучение) -->
-    <div id="intro-modal" class="modal">
-        <div class="modal-content intro-content">
-            <div class="intro-header">
-                <span class="intro-stamp">СОВЕРШЕННО СЕКРЕТНО</span>
-                <h2>ЛИЧНОЕ ДЕЛО ИНЖЕНЕРА</h2>
-<div class="intro-photo">
-                <div class="photo-real">
-                    <img src="images/engineer.png" alt="Инженер Polymeria" class="engineer-photo">
-                    <div class="photo-stamp">ДОПУЩЕН</div>
-                </div>
-            </div>
-            <div class="intro-text">
-                <p><strong>Доброго времени суток!</strong></p>
-                <p>Я — это ты. Твоя фамилия в приказе не указана, но номер бригады известен: <strong>Полимерия-1</strong>. С этого момента ты — дежурный инженер завода по добыче и очистке полимера.</p>
-                <p>Наша задача: <strong>выполнить план пятилетки досрочно</strong>. Полимер — кровь советской промышленности. Чем больше мы его добываем, тем крепче стоит Родина.</p>
-                <p>Запомни основы, товарищ:</p>
-                <ul>
-                    <li><strong>Красная кнопка</strong> — ручная добыча полимера. Жми, пока руки не откажут.</li>
-                    <li><strong>Роботы-сборщики</strong> — твоя смена. Нанимай их за полимер, они работают без перерыва на обед.</li>
-                    <li><strong>Очистка</strong> — превращай грязный полимер в очищенный. Пропорция простая: 100 к 1.</li>
-                    <li><strong>Звёзды</strong> — особая валюта партии. Трать с умом.</li>
-                    <li><strong>Коллапс</strong> — 4 раза в сутки реактор сходит с ума. Принимай решение быстро, иначе цех накроется.</li>
-                </ul>
-                <p>Смена длится вечно, но отдых разрешён. Завод верит в тебя.</p>
-                <p class="intro-signature">С приветом,<br>ты сам.</p>
-            </div>
-            <button id="btn-start-shift" class="big-red-button" style="font-size:1.2em; padding:14px;">
-                ПРИНЯТЬ СМЕНУ
-            </button>
-        </div>
+    <!-- Приветственное окно -->
+    <div id="intro-modal" class="modal hidden">
+        <!-- твой код приветственного окна -->
     </div>
+
+    <!-- Нижняя панель навигации -->
+    <nav class="nav-bar">
+        <button class="nav-btn" data-tab="tasks">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Задачи</span>
+        </button>
+        <button class="nav-btn active" data-tab="control">
+            <span class="nav-icon">🎛️</span>
+            <span class="nav-label">Пульт</span>
+        </button>
+        <button class="nav-btn" data-tab="profile">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Профиль</span>
+        </button>
+    </nav>
 </div>
 
     <script src="main.js"></script>
