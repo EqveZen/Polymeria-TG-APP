@@ -100,11 +100,54 @@
         </div>
     </div>
 
-    <!-- Заглушка: Профиль -->
+   <!-- Профиль -->
     <div id="tab-profile" class="tab-content hidden">
-        <div class="panel placeholder-panel">
-            <h2>👤 ПРОФИЛЬ ИНЖЕНЕРА</h2>
-            <p>Личное дело появится здесь.</p>
+        <div class="panel profile-panel">
+            <div class="profile-header">
+                <div class="profile-photo">
+                    <img src="engineer.png" alt="Инженер">
+                </div>
+                <div class="profile-name">Инженер Полимерия-1</div>
+                <div class="profile-rank">Дежурный 3-й смены</div>
+            </div>
+
+            <div class="profile-stars-section">
+                <div>
+                    <span class="profile-stars-label">Баланс звёзд</span>
+                    <div class="profile-stars-value" id="profile-stars">0 ⭐</div>
+                </div>
+            </div>
+
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <span class="profile-stat-label">Полимер</span>
+                    <span class="profile-stat-value" id="profile-polymer">0</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-label">Очищено</span>
+                    <span class="profile-stat-value" id="profile-purified">0</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-label">Роботов</span>
+                    <span class="profile-stat-value" id="profile-robots">0</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="profile-btn gold" id="btn-buy-stars">
+                    💎 ПОПОЛНИТЬ ЗВЁЗДЫ
+                </button>
+                <button class="profile-btn" id="btn-daily-bonus">
+                    🎁 СУТОЧНЫЙ БОНУС
+                </button>
+                <button class="profile-btn" id="btn-invite-friend">
+                    👥 ПРИГЛАСИТЬ ДРУГА
+                </button>
+            </div>
+
+            <div class="profile-footer">
+                Polymeria | Москва, 1955 (альт.)
+            </div>
         </div>
     </div>
 

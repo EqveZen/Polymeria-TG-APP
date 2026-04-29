@@ -61,7 +61,7 @@
         function pulseElement(el) {
             if (!el) return;
             el.classList.remove('pulse');
-            void el.offsetWidth; // рефлоу для перезапуска анимации
+            void el.offsetWidth;
             el.classList.add('pulse');
         }
 
@@ -82,6 +82,19 @@
                 btn.appendChild(spark);
                 setTimeout(() => spark.remove(), 600);
             }
+        }
+
+        // Обновление вкладки Профиль
+        function updateProfileTab() {
+            const profileStars = document.getElementById('profile-stars');
+            const profilePolymer = document.getElementById('profile-polymer');
+            const profilePurified = document.getElementById('profile-purified');
+            const profileRobots = document.getElementById('profile-robots');
+
+            if (profileStars) profileStars.textContent = Math.floor(state.stars) + ' ⭐';
+            if (profilePolymer) profilePolymer.textContent = Math.floor(state.polymer);
+            if (profilePurified) profilePurified.textContent = Math.floor(state.purified);
+            if (profileRobots) profileRobots.textContent = state.robots;
         }
 
         // Обновление интерфейса
@@ -118,6 +131,9 @@
             if (ui.nextCollapseTime) {
                 ui.nextCollapseTime.textContent = getNextCollapseTime();
             }
+
+            // Обновляем профиль если он открыт
+            updateProfileTab();
         }
 
         // Добыча неочищенного полимера (клик по красной кнопке)
@@ -125,7 +141,7 @@
             state.polymer += state.baseClickValue;
             updateUI();
             saveGame();
-            createSparks(); // искры
+            createSparks();
         }
 
         // Покупка робота
@@ -183,7 +199,7 @@
             updateUI();
         }
 
-// Инициализация
+        // Инициализация
         function init() {
             loadGame();
             setInterval(autoCollect, 1000);
@@ -233,24 +249,47 @@
             const navBtns = document.querySelectorAll('.nav-btn');
             const tabs = document.querySelectorAll('.tab-content');
 
+            function switchTab(tabName) {
+                navBtns.forEach(b => b.classList.remove('active'));
+                const activeBtn = document.querySelector(`.nav-btn[data-tab="${tabName}"]`);
+                if (activeBtn) activeBtn.classList.add('active');
+
+                tabs.forEach(tab => {
+                    tab.classList.add('hidden');
+                    tab.classList.remove('active');
+                });
+
+                const targetTab = document.getElementById('tab-' + tabName);
+                if (targetTab) {
+                    targetTab.classList.remove('hidden');
+                    targetTab.classList.add('active');
+                }
+
+                if (tabName === 'profile') {
+                    updateProfileTab();
+                }
+            }
+
             navBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const tabName = btn.getAttribute('data-tab');
-
-                    navBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-
-                    tabs.forEach(tab => {
-                        tab.classList.add('hidden');
-                        tab.classList.remove('active');
-                    });
-
-                    const targetTab = document.getElementById('tab-' + tabName);
-                    if (targetTab) {
-                        targetTab.classList.remove('hidden');
-                        targetTab.classList.add('active');
-                    }
+                    switchTab(tabName);
                 });
+            });
+
+            // Кнопки профиля (заглушки)
+            const btnBuyStars = document.getElementById('btn-buy-stars');
+            const btnDailyBonus = document.getElementById('btn-daily-bonus');
+            const btnInviteFriend = document.getElementById('btn-invite-friend');
+
+            if (btnBuyStars) btnBuyStars.addEventListener('click', () => {
+                alert('🌟 Магазин звёзд откроется здесь.\nОплата через Telegram Stars.');
+            });
+            if (btnDailyBonus) btnDailyBonus.addEventListener('click', () => {
+                alert('🎁 Суточный бонус: +50 неочищенного полимера.\nЗаходи каждый день!');
+            });
+            if (btnInviteFriend) btnInviteFriend.addEventListener('click', () => {
+                alert('👥 Пригласи друга — получи 5 звёзд.\nРеферальная система скоро заработает.');
             });
         }
 
