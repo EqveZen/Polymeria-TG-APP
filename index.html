@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Polymeria — Завод</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+    <!-- Верхняя панель с названием и лампой смены -->
+    <header class="panel control-panel">
+        <div class="panel-title">
+            <span class="lamp on"></span>
+            <h1>POLYMERIA</h1>
+            <span class="lamp off" id="lamp-shift"></span>
+        </div>
+        <div id="time-display">Смена: --</div>
+    </header>
+
+    <!-- Секция индикаторов (приборы без полосок) -->
+    <div class="panel gauges">
+        <div class="gauge" id="gauge-polymer">
+            <div class="gauge-label">Неочищенный</div>
+            <div class="gauge-value" id="resource-polymer">0</div>
+        </div>
+        <div class="gauge" id="gauge-purified">
+            <div class="gauge-label">Очищенный</div>
+            <div class="gauge-value" id="resource-purified">0</div>
+        </div>
+        <div class="gauge" id="gauge-energy">
+            <div class="gauge-label">Энергия</div>
+            <div class="gauge-value" id="resource-energy">100</div>
+        </div>
+        <div class="gauge" id="gauge-stars">
+            <div class="gauge-label">Звёзды</div>
+            <div class="gauge-value" id="resource-stars">0</div>
+        </div>
+    </div>
+
+    <!-- Главная красная кнопка (без молнии) -->
+    <div class="panel action-panel">
+        <button id="btn-harvest" class="big-red-button">
+            ДОБЫТЬ ПОЛИМЕР
+        </button>
+    </div>
+
+    <!-- Панель автоматики: роботы, конвертация -->
+    <div class="panel robots-panel">
+        <h3>🤖 АВТОМАТИКА</h3>
+        <div class="robot-stats">
+            <div class="indicator">
+                <span class="indicator-label">Роботов</span>
+                <span class="indicator-value" id="robot-count">0</span>
+            </div>
+            <div class="indicator">
+                <span class="indicator-label">Доход/сек</span>
+                <span class="indicator-value" id="income-per-sec">0</span>
+            </div>
+            <div class="indicator">
+                <span class="indicator-label">Цена</span>
+                <span class="indicator-value" id="robot-cost">10</span>
+            </div>
+        </div>
+        <button id="btn-buy-robot" class="toggle-switch">
+            <span class="switch-knob"></span> ЗАПУСТИТЬ РОБОТА
+        </button>
+
+        <!-- Конвертация: очистка неочищенного полимера -->
+        <div class="conversion-section">
+            <div class="conversion-info">
+                <span>Очистка: 100 неочищенного → 1 очищенный</span>
+                <button id="btn-convert" class="toggle-switch" style="margin-top:6px;">
+                    <span class="switch-knob"></span> ОЧИСТИТЬ (100)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Лампы состояния и коллапс -->
+    <div class="panel status-panel">
+        <div class="status-row">
+            <span class="status-lamp on" id="lamp-normal"></span>
+            <span>Норма</span>
+            <span class="status-lamp off" id="lamp-collapse"></span>
+            <span>Коллапс</span>
+        </div>
+        <small>Ближайшая проверка: <span id="next-collapse-time">--</span></small>
+    </div>
+
+    <!-- Модальное окно коллапса -->
+    <div id="collapse-modal" class="modal hidden"></div>
+
+    <footer class="panel debug">
+        <small>Polymeria v0.3 | Пульт управления | Москва, 1955 (альт.)</small>
+    </footer>
+<!-- Приветственное окно (обучение) -->
+    <div id="intro-modal" class="modal">
+        <div class="modal-content intro-content">
+            <div class="intro-header">
+                <span class="intro-stamp">СОВЕРШЕННО СЕКРЕТНО</span>
+                <h2>ЛИЧНОЕ ДЕЛО ИНЖЕНЕРА</h2>
+<div class="intro-photo">
+                <div class="photo-real">
+                    <img src="images/engineer.png" alt="Инженер Polymeria" class="engineer-photo">
+                    <div class="photo-stamp">ДОПУЩЕН</div>
+                </div>
+            </div>
+            <div class="intro-text">
+                <p><strong>Доброго времени суток!</strong></p>
+                <p>Я — это ты. Твоя фамилия в приказе не указана, но номер бригады известен: <strong>Полимерия-1</strong>. С этого момента ты — дежурный инженер завода по добыче и очистке полимера.</p>
+                <p>Наша задача: <strong>выполнить план пятилетки досрочно</strong>. Полимер — кровь советской промышленности. Чем больше мы его добываем, тем крепче стоит Родина.</p>
+                <p>Запомни основы, товарищ:</p>
+                <ul>
+                    <li><strong>Красная кнопка</strong> — ручная добыча полимера. Жми, пока руки не откажут.</li>
+                    <li><strong>Роботы-сборщики</strong> — твоя смена. Нанимай их за полимер, они работают без перерыва на обед.</li>
+                    <li><strong>Очистка</strong> — превращай грязный полимер в очищенный. Пропорция простая: 100 к 1.</li>
+                    <li><strong>Звёзды</strong> — особая валюта партии. Трать с умом.</li>
+                    <li><strong>Коллапс</strong> — 4 раза в сутки реактор сходит с ума. Принимай решение быстро, иначе цех накроется.</li>
+                </ul>
+                <p>Смена длится вечно, но отдых разрешён. Завод верит в тебя.</p>
+                <p class="intro-signature">С приветом,<br>ты сам.</p>
+            </div>
+            <button id="btn-start-shift" class="big-red-button" style="font-size:1.2em; padding:14px;">
+                ПРИНЯТЬ СМЕНУ
+            </button>
+        </div>
+    </div>
+</div>
+
+    <script src="main.js"></script>
+    <script src="collapse.js"></script>
+    <script src="telegram.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.Polymeria && window.Polymeria.init) {
+                window.Polymeria.init();
+            }
+        });
+    </script>
+</body>
+</html>
