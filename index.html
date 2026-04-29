@@ -21,14 +21,14 @@
         <div id="time-display">Смена: --</div>
     </header>
 
-    <!-- Секция индикаторов (приборы без полосок) -->
+    <!-- Секция индикаторов -->
     <div class="panel gauges">
         <div class="gauge" id="gauge-polymer">
-            <div class="gauge-label">Неочищенный</div>
+            <div class="gauge-label">Отработка</div>
             <div class="gauge-value" id="resource-polymer">0</div>
         </div>
         <div class="gauge" id="gauge-purified">
-            <div class="gauge-label">Очищенный</div>
+            <div class="gauge-label">Полимер</div>
             <div class="gauge-value" id="resource-purified">0</div>
         </div>
         <div class="gauge" id="gauge-energy">
@@ -44,7 +44,7 @@
     <!-- Главная красная кнопка -->
     <div class="panel action-panel">
         <button id="btn-harvest" class="big-red-button">
-            ДОБЫТЬ ПОЛИМЕР
+            РАБОТАТЬ
         </button>
     </div>
 
@@ -66,14 +66,14 @@
             </div>
         </div>
         <button id="btn-buy-robot" class="toggle-switch">
-            <span class="switch-knob"></span> ЗАПУСТИТЬ РОБОТА
+            <span class="switch-knob"></span> ПРИОБРЕСТИ РОБОТА
         </button>
 
         <div class="conversion-section">
             <div class="conversion-info">
-                <span>Очистка: 100 неочищенного → 1 очищенный</span>
+<span>Очистка: 100 отработки + 10 энергии → 1 полимер</span>
                 <button id="btn-convert" class="toggle-switch" style="margin-top:6px;">
-                    <span class="switch-knob"></span> ОЧИСТИТЬ (100)
+                    <span class="switch-knob"></span> ОЧИСТИТЬ
                 </button>
             </div>
         </div>
@@ -115,14 +115,14 @@
                         <span class="shop-item-name">Удвоение дохода</span>
                         <span class="shop-item-desc">x2 на 1 час</span>
                     </div>
-                    <button class="shop-item-btn">10 звёзд</button>
+                    <button class="shop-item-btn">15 ⭐️</button>
                 </div>
                 <div class="shop-item">
                     <div class="shop-item-info">
                         <span class="shop-item-name">Мгновенные роботы</span>
                         <span class="shop-item-desc">+5 роботов</span>
                     </div>
-                    <button class="shop-item-btn">15 звёзд</button>
+                    <button class="shop-item-btn">15 ⭐️</button>
                 </div>
             </div>
 
@@ -133,7 +133,7 @@
                         <span class="shop-item-name">Усиление клика</span>
                         <span class="shop-item-desc">+2 к добыче</span>
                     </div>
-                    <button class="shop-item-btn">20 звёзд</button>
+                    <button class="shop-item-btn">20 ⭐️</button>
                 </div>
             </div>
         </div>
@@ -144,7 +144,7 @@
         <div class="panel profile-panel">
             <div class="profile-header">
                 <div class="profile-photo" id="profile-photo-container">
-                    <img src="engineer.png" alt="Инженер" id="profile-photo-img">
+                    <img src="images/engineer.png" alt="Инженер" id="profile-photo-img">
                 </div>
                 <div class="profile-name" id="profile-name">Инженер Полимерия-1</div>
                 <div class="profile-rank">Дежурный 3-й смены</div>
@@ -159,11 +159,11 @@
 
             <div class="profile-stats">
                 <div class="profile-stat">
-                    <span class="profile-stat-label">Полимер</span>
+                    <span class="profile-stat-label">Отработка</span>
                     <span class="profile-stat-value" id="profile-polymer">0</span>
                 </div>
                 <div class="profile-stat">
-                    <span class="profile-stat-label">Очищено</span>
+                    <span class="profile-stat-label">Полимер</span>
                     <span class="profile-stat-value" id="profile-purified">0</span>
                 </div>
                 <div class="profile-stat">
@@ -180,7 +180,7 @@
                     ⬆️ ВЫВЕСТИ ЗВЁЗДЫ ⬆️
                 </button>
                 <button class="profile-btn" id="btn-daily-bonus">
-                    🎁 СУТОЧНЫЙ БОНУС 🎁
+                    🎁 ЕЖЕДНЕВНЫЙ БОНУС 🎁
                 </button>
                 <button class="profile-btn" id="btn-invite-friend">
                     ⚡️ ПРИГЛАСИТЬ ДРУГА ⚡️

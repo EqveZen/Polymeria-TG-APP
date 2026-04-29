@@ -113,6 +113,66 @@
             }
         }
 
+        // Обновление вкладки Магазин
+        function updateShopTab() {
+            const shopStars = document.getElementById('shop-stars');
+            if (shopStars) shopStars.textContent = Math.floor(state.stars);
+        }
+
+        // Суточный бонус
+        const BONUS_COOLDOWN = 24 * 60 * 60 * 1000; // 24 часа
+
+        function canClaimBonus() {
+            const lastClaim = localStorage.getItem('polymeria_bonus_claimed');
+            if (!lastClaim) return true;
+            const now = Date.now();
+            return (now - parseInt(lastClaim)) >= BONUS_COOLDOWN;
+        }
+
+        function getBonusTimeLeft() {
+            const lastClaim = localStorage.getItem('polymeria_bonus_claimed');
+            if (!lastClaim) return '00:00:00';
+            const now = Date.now();
+            const elapsed = now - parseInt(lastClaim);
+            const left = BONUS_COOLDOWN - elapsed;
+            if (left <= 0) return '00:00:00';
+            const hours = Math.floor(left / 3600000);
+            const mins = Math.floor((left % 3600000) / 60000);
+            const secs = Math.floor((left % 60000) / 1000);
+            return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function claimBonus() {
+            if (!canClaimBonus()) {
+                const left = getBonusTimeLeft();
+                alert(`Бонус уже получен. Следующий через ${left}.`);
+                return;
+            }
+
+            state.polymer += 50;
+            localStorage.setItem('polymeria_bonus_claimed', Date.now().toString());
+            updateUI();
+            saveGame();
+            updateBonusButton();
+            alert('Суточный бонус получен: +50 неочищенного полимера!');
+        }
+
+        function updateBonusButton() {
+            const btnDailyBonus = document.getElementById('btn-daily-bonus');
+            if (!btnDailyBonus) return;
+
+            if (canClaimBonus()) {
+                btnDailyBonus.textContent = 'СУТОЧНЫЙ БОНУС (ГОТОВ)';
+                btnDailyBonus.style.color = '#00ffcc';
+                btnDailyBonus.style.borderColor = '#00ffcc';
+            } else {
+                const left = getBonusTimeLeft();
+                btnDailyBonus.textContent = `СУТОЧНЫЙ БОНУС (${left})`;
+                btnDailyBonus.style.color = '#666';
+                btnDailyBonus.style.borderColor = '#555';
+            }
+        }
+
         // Обновление интерфейса
         function updateUI() {
             // Значения с пульсацией
@@ -124,6 +184,15 @@
             pulseElement(ui.purified);
             ui.stars.textContent = Math.floor(state.stars);
             pulseElement(ui.stars);
+
+            // Цвет энергии: красный если меньше 10
+            if (state.energy < 10) {
+                ui.energy.style.color = '#cc0000';
+                ui.energy.style.textShadow = '0 0 6px #cc0000';
+            } else {
+                ui.energy.style.color = '';
+                ui.energy.style.textShadow = '';
+            }
 
             ui.robotCount.textContent = state.robots;
             ui.incomeDisplay.textContent = (state.robots * 0.1).toFixed(1);
@@ -174,16 +243,21 @@
             }
         }
 
-        // Конвертация: 100 неочищенного → 1 очищенный
+        // Конвертация: 100 неочищенного + 10 энергии → 1 очищенный
         function convertPolymer() {
-            if (state.polymer >= 100) {
-                state.polymer -= 100;
-                state.purified += 1;
-                updateUI();
-                saveGame();
-            } else {
+            if (state.polymer < 100) {
                 alert('Недостаточно неочищенного полимера. Нужно 100.');
+                return;
             }
+            if (state.energy < 10) {
+                alert('Недостаточно энергии. Нужно 10. Восстановите энергию или ждите коллапса.');
+                return;
+            }
+            state.polymer -= 100;
+            state.energy -= 10;
+            state.purified += 1;
+            updateUI();
+            saveGame();
         }
 
         // Автосбор от роботов
@@ -215,13 +289,7 @@
             updateUI();
         }
 
-	// Обновление вкладки Магазин
-        function updateShopTab() {
-            const shopStars = document.getElementById('shop-stars');
-            if (shopStars) shopStars.textContent = Math.floor(state.stars);
-        }
-
-// Инициализация
+        // Инициализация
         function init() {
             loadGame();
             setInterval(autoCollect, 1000);
@@ -289,6 +357,7 @@
 
                 if (tabName === 'profile') {
                     updateProfileTab();
+                    updateBonusButton();
                 }
                 if (tabName === 'shop') {
                     updateShopTab();
@@ -302,12 +371,14 @@
                 });
             });
 
-            // Кнопки профиля (заглушки)
+            // Кнопки профиля
             const btnBuyStars = document.getElementById('btn-buy-stars');
-            const btnDailyBonus = document.getElementById('btn-daily-bonus');
+            const btnWithdrawStars = document.getElementById('btn-withdraw-stars');
             const btnInviteFriend = document.getElementById('btn-invite-friend');
-				const btnWithdrawStars = document.getElementById('btn-withdraw-stars');
 
+            if (btnBuyStars) btnBuyStars.addEventListener('click', () => {
+                alert('Магазин звёзд откроется здесь.\nОплата через Telegram Stars.');
+            });
             if (btnWithdrawStars) btnWithdrawStars.addEventListener('click', () => {
                 if (state.stars <= 0) {
                     alert('Недостаточно звёзд для вывода.');
@@ -315,16 +386,19 @@
                 }
                 alert('Вывод ' + Math.floor(state.stars) + ' звёзд.\nФункция появится позже.');
             });
-
-            if (btnBuyStars) btnBuyStars.addEventListener('click', () => {
-                alert('Магазин звёзд откроется здесь.\nОплата через Telegram Stars.');
-            });
-            if (btnDailyBonus) btnDailyBonus.addEventListener('click', () => {
-                alert('Суточный бонус: +50 неочищенного полимера.\nЗаходи каждый день!');
-            });
             if (btnInviteFriend) btnInviteFriend.addEventListener('click', () => {
                 alert('Пригласи друга — получи 5 звёзд.\nРеферальная система скоро заработает.');
             });
+
+            // Кнопка суточного бонуса
+            const btnDailyBonus = document.getElementById('btn-daily-bonus');
+            if (btnDailyBonus) {
+                const newBtn = btnDailyBonus.cloneNode(true);
+                btnDailyBonus.parentNode.replaceChild(newBtn, btnDailyBonus);
+                newBtn.addEventListener('click', claimBonus);
+                updateBonusButton();
+                setInterval(updateBonusButton, 1000);
+            }
         }
 
         // Экспорт
