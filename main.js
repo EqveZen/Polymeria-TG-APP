@@ -183,7 +183,7 @@
             updateUI();
         }
 
-// Инициализация
+        // Инициализация
         function init() {
             loadGame();
             setInterval(autoCollect, 1000);
@@ -202,80 +202,55 @@
             const introModal = document.getElementById('intro-modal');
             if (!introModal) return;
 
-            // Сразу проверить localStorage (самый быстрый путь)
-            if (localStorage.getItem('polymeria_intro_shown') === '1') {
-                return; // уже показано — выходим сразу
-            }
+            // Функция закрытия окна
+            function closeIntro() {
+                introModal.classList.add('hidden');
+                localStorage.setItem('polymeria_intro_shown', '1');
 
-            // Функция показа окна
-            function showIntro() {
-                introModal.classList.remove('hidden');
-                const btnStart = document.getElementById('btn-start-shift');
-                if (!btnStart) return;
+                // В облако
+                if (window.Polymeria.cloudAvailable) {
+                    const tg = window.Telegram.WebApp;
+                    tg.CloudStorage.setItem('polymeria_intro_shown', '1', (err) => {
+                        if (err) console.error('Ошибка сохранения флага', err);
+                    });
+                }
 
-                // Удаляем старый обработчик если есть
-                const newBtn = btnStart.cloneNode(true);
-                btnStart.parentNode.replaceChild(newBtn, btnStart);
-
-                newBtn.addEventListener('click', () => {
-                    introModal.classList.add('hidden');
-                    localStorage.setItem('polymeria_intro_shown', '1');
-
-                    // В облако
-                    if (window.Polymeria.cloudAvailable) {
-                        const tg = window.Telegram.WebApp;
-                        tg.CloudStorage.setItem('polymeria_intro_shown', '1', (err) => {
-                            if (err) console.error('Ошибка сохранения флага', err);
-                        });
+                // Удаляем окно из DOM полностью
+                setTimeout(() => {
+                    if (introModal.parentNode) {
+                        introModal.parentNode.removeChild(introModal);
                     }
-
-                    // На всякий случай удаляем из DOM
-                    setTimeout(() => {
-                        if (introModal.parentNode) {
-                            introModal.parentNode.removeChild(introModal);
-                        }
-                    }, 300);
-                });
+                }, 300);
             }
 
-            // Если мы в Telegram — проверяем облако
+            // Вешаем обработчик сразу на кнопку
+            const btnStart = document.getElementById('btn-start-shift');
+            if (btnStart) {
+                btnStart.addEventListener('click', closeIntro);
+            }
+
+            // Проверяем localStorage — быстро
+            if (localStorage.getItem('polymeria_intro_shown') === '1') {
+                closeIntro();
+                return;
+            }
+
+            // Проверяем облако, если доступно
             if (window.Polymeria.cloudAvailable) {
                 const tg = window.Telegram.WebApp;
                 tg.CloudStorage.getItem('polymeria_intro_shown', (err, value) => {
                     if (!err && value === '1') {
-                        // В облаке есть флаг — сохраняем локально и НЕ показываем
                         localStorage.setItem('polymeria_intro_shown', '1');
+                        closeIntro();
                         return;
                     }
                     // Флага нет — показываем
-                    showIntro();
+                    introModal.classList.remove('hidden');
                 });
             } else {
-                // Не в Telegram — локального флага нет, показываем
-                showIntro();
-            }
-        }
-
-            function showIntro() {
-                const introModal = document.getElementById('intro-modal');
-                if (!introModal) return;
+                // Не в Telegram, локального флага нет — показываем
                 introModal.classList.remove('hidden');
-                document.getElementById('btn-start-shift').addEventListener('click', () => {
-                    introModal.classList.add('hidden');
-                    // Сохраняем локально
-                    localStorage.setItem('polymeria_intro_shown', '1');
-                    // Сохраняем в облако, если доступно
-                    if (window.Polymeria.isTelegram && window.Polymeria.cloudAvailable) {
-                        const tg = window.Telegram.WebApp;
-                        tg.CloudStorage.setItem('polymeria_intro_shown', '1', (err) => {
-                            if (err) console.error('Ошибка сохранения флага intro в CloudStorage', err);
-                        });
-                    }
-                });
             }
-
-            // Запускаем с небольшой задержкой, чтобы CloudStorage успел инициализироваться
-            setTimeout(showIntroIfNeeded, 500);
         }
 
         // Экспорт
