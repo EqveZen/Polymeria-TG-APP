@@ -7,6 +7,7 @@
     const isTelegram = window.Telegram && window.Telegram.WebApp;
     window.Polymeria.isTelegram = isTelegram;
     window.Polymeria.cloudAvailable = false;
+    window.Polymeria.tgUser = null;
 
     function initTelegram() {
         if (!isTelegram) {
@@ -16,6 +17,14 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
         window.Polymeria.cloudAvailable = true;
+
+        // Получаем данные пользователя
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            window.Polymeria.tgUser = tg.initDataUnsafe.user;
+            console.log('Polymeria: пользователь загружен', window.Polymeria.tgUser);
+        } else {
+            console.log('Polymeria: initDataUnsafe.user недоступен');
+        }
 
         if (tg.colorScheme === 'dark') {
             document.body.style.backgroundColor = '#1e1e1e';

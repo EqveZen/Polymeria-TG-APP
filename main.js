@@ -97,22 +97,18 @@
             if (profileRobots) profileRobots.textContent = state.robots;
 
             // Фото и имя из Telegram
-            if (window.Polymeria.isTelegram && window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                const user = tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
-                
-                if (user) {
-                    const profileName = document.getElementById('profile-name');
-                    const profilePhoto = document.getElementById('profile-photo-img');
-                    
-                    if (profileName && user.first_name) {
-                        profileName.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-                    }
-                    
-                    if (profilePhoto && user.photo_url) {
-                        profilePhoto.src = user.photo_url;
-                        profilePhoto.style.filter = 'none';
-                    }
+            const tgUser = window.Polymeria.tgUser;
+            const profileName = document.getElementById('profile-name');
+            const profilePhoto = document.getElementById('profile-photo-img');
+
+            if (tgUser) {
+                if (profileName && tgUser.first_name) {
+                    const fullName = tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '');
+                    profileName.textContent = fullName;
+                }
+                if (profilePhoto && tgUser.photo_url) {
+                    profilePhoto.src = tgUser.photo_url;
+                    profilePhoto.style.filter = 'none';
                 }
             }
         }
