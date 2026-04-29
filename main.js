@@ -149,7 +149,7 @@
                 return;
             }
 
-            state.polymer += 50;
+            state.purified += 50;
             localStorage.setItem('polymeria_bonus_claimed', Date.now().toString());
             updateUI();
             saveGame();
