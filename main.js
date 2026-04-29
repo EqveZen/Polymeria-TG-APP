@@ -91,10 +91,30 @@
             const profilePurified = document.getElementById('profile-purified');
             const profileRobots = document.getElementById('profile-robots');
 
-            if (profileStars) profileStars.textContent = Math.floor(state.stars) + ' ⭐';
+            if (profileStars) profileStars.textContent = Math.floor(state.stars);
             if (profilePolymer) profilePolymer.textContent = Math.floor(state.polymer);
             if (profilePurified) profilePurified.textContent = Math.floor(state.purified);
             if (profileRobots) profileRobots.textContent = state.robots;
+
+            // Фото и имя из Telegram
+            if (window.Polymeria.isTelegram && window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                const user = tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
+                
+                if (user) {
+                    const profileName = document.getElementById('profile-name');
+                    const profilePhoto = document.getElementById('profile-photo-img');
+                    
+                    if (profileName && user.first_name) {
+                        profileName.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+                    }
+                    
+                    if (profilePhoto && user.photo_url) {
+                        profilePhoto.src = user.photo_url;
+                        profilePhoto.style.filter = 'none';
+                    }
+                }
+            }
         }
 
         // Обновление интерфейса
@@ -199,7 +219,13 @@
             updateUI();
         }
 
-        // Инициализация
+	// Обновление вкладки Магазин
+        function updateShopTab() {
+            const shopStars = document.getElementById('shop-stars');
+            if (shopStars) shopStars.textContent = Math.floor(state.stars);
+        }
+
+// Инициализация
         function init() {
             loadGame();
             setInterval(autoCollect, 1000);
@@ -268,6 +294,9 @@
                 if (tabName === 'profile') {
                     updateProfileTab();
                 }
+                if (tabName === 'shop') {
+                    updateShopTab();
+                }
             }
 
             navBtns.forEach(btn => {
@@ -281,15 +310,24 @@
             const btnBuyStars = document.getElementById('btn-buy-stars');
             const btnDailyBonus = document.getElementById('btn-daily-bonus');
             const btnInviteFriend = document.getElementById('btn-invite-friend');
+				const btnWithdrawStars = document.getElementById('btn-withdraw-stars');
+
+            if (btnWithdrawStars) btnWithdrawStars.addEventListener('click', () => {
+                if (state.stars <= 0) {
+                    alert('Недостаточно звёзд для вывода.');
+                    return;
+                }
+                alert('Вывод ' + Math.floor(state.stars) + ' звёзд.\nФункция появится позже.');
+            });
 
             if (btnBuyStars) btnBuyStars.addEventListener('click', () => {
-                alert('🌟 Магазин звёзд откроется здесь.\nОплата через Telegram Stars.');
+                alert('Магазин звёзд откроется здесь.\nОплата через Telegram Stars.');
             });
             if (btnDailyBonus) btnDailyBonus.addEventListener('click', () => {
-                alert('🎁 Суточный бонус: +50 неочищенного полимера.\nЗаходи каждый день!');
+                alert('Суточный бонус: +50 неочищенного полимера.\nЗаходи каждый день!');
             });
             if (btnInviteFriend) btnInviteFriend.addEventListener('click', () => {
-                alert('👥 Пригласи друга — получи 5 звёзд.\nРеферальная система скоро заработает.');
+                alert('Пригласи друга — получи 5 звёзд.\nРеферальная система скоро заработает.');
             });
         }
 
