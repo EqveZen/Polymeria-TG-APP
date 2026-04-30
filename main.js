@@ -1,16 +1,32 @@
-// main.js — ядро Polymeria v0.3 (пульт управления + анимации)
+// main.js — ядро Polymeria v0.4 (пульт управления + анимации + магазин)
 (function() {
     'use strict';
 
     try {
         if (!window.Polymeria) window.Polymeria = {};
 
+        // Токен бота для платежей
+        const BOT_TOKEN = '8630005573:AAHRhjXHdSw0Yqz-jUhHEPqpQnMEVhD0_7o';
+        const BOT_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
+
+        // Пакеты звёзд
+        const starPacks = {
+            test1:   { amount: 1,    bonus: 0,    label: '1 звезда (тест)' },
+            pack100: { amount: 100,  bonus: 20,   label: '100 + 20 бонус' },
+            pack250: { amount: 250,  bonus: 50,   label: '250 + 50 бонус' },
+            pack500: { amount: 500,  bonus: 100,  label: '500 + 100 бонус' },
+            pack1000: { amount: 1000, bonus: 200,  label: '1000 + 200 бонус' }
+        };
+
+        // Хранилище ожидающих платежей
+        let pendingPayments = JSON.parse(localStorage.getItem('polymeria_pending') || '{}');
+
         // Состояние игры
         const state = {
-            polymer: 0,        // неочищенный
-            purified: 0,       // очищенный
+            polymer: 0,        // отработка
+            purified: 0,       // полимер
             energy: 100,
-            stars: 0,          // красные звёзды (донатные)
+            stars: 0,          // звёзды
             robots: 0,
             baseClickValue: 1,
             robotCost: 10,
@@ -96,7 +112,6 @@
             if (profilePurified) profilePurified.textContent = Math.floor(state.purified);
             if (profileRobots) profileRobots.textContent = state.robots;
 
-            // Фото и имя из Telegram
             const tgUser = window.Polymeria.tgUser;
             const profileName = document.getElementById('profile-name');
             const profilePhoto = document.getElementById('profile-photo-img');
@@ -120,7 +135,7 @@
         }
 
         // Суточный бонус
-        const BONUS_COOLDOWN = 24 * 60 * 60 * 1000; // 24 часа
+        const BONUS_COOLDOWN = 24 * 60 * 60 * 1000;
 
         function canClaimBonus() {
             const lastClaim = localStorage.getItem('polymeria_bonus_claimed');
@@ -154,7 +169,7 @@
             updateUI();
             saveGame();
             updateBonusButton();
-            alert('Суточный бонус получен: +50 неочищенного полимера!');
+            alert('Суточный бонус получен: +50 полимера!');
         }
 
         function updateBonusButton() {
@@ -173,9 +188,99 @@
             }
         }
 
+        // Платёжные функции
+        function buyStars(packKey) {
+            if (!window.Polymeria.cloudAvailable || !window.Telegram || !window.Telegram.WebApp) {
+                alert('Покупка доступна только внутри Telegram.');
+                return;
+            }
+
+            const pack = starPacks[packKey];
+            if (!pack) return;
+
+            const tg = window.Telegram.WebApp;
+            const userId = tg.initDataUnsafe?.user?.id;
+
+            if (!userId) {
+                alert('Ошибка: не удалось получить ID пользователя.');
+                return;
+            }
+
+            const payload = `${packKey}_${Date.now()}`;
+
+            fetch(`${BOT_API}/sendInvoice`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: userId,
+                    title: 'Пополнение звёзд Polymeria',
+                    description: `${pack.label} звёзд`,
+                    payload: payload,
+                    currency: 'XTR',
+                    provider_token: '',
+                    prices: [{ label: pack.label, amount: pack.amount }]
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) {
+                    pendingPayments[payload] = {
+                        packKey: packKey,
+                        amount: pack.amount,
+                        bonus: pack.bonus,
+                        time: Date.now()
+                    };
+                    localStorage.setItem('polymeria_pending', JSON.stringify(pendingPayments));
+                    alert(`Счёт на ${pack.label} звёзд отправлен!\nПосле оплаты нажмите "Проверить оплату".`);
+                } else {
+                    alert('Ошибка: ' + (data.description || 'неизвестная'));
+                    console.error('Invoice error:', data);
+                }
+            })
+            .catch(err => {
+                console.error('Fetch error:', err);
+                alert('Ошибка соединения. Попробуйте позже.');
+            });
+        }
+
+        function checkPayments() {
+            if (Object.keys(pendingPayments).length === 0) {
+                alert('Нет ожидающих платежей.');
+                return;
+            }
+
+            let found = 0;
+            const promises = Object.keys(pendingPayments).map(payload => {
+                return fetch(`${BOT_API}/getInvoice?payload=${encodeURIComponent(payload)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.ok && data.result && data.result.status === 'paid') {
+                            const payment = pendingPayments[payload];
+                            state.stars += payment.amount + payment.bonus;
+                            delete pendingPayments[payload];
+                            found++;
+                        }
+                    })
+                    .catch(() => {});
+            });
+
+            Promise.all(promises).then(() => {
+                localStorage.setItem('polymeria_pending', JSON.stringify(pendingPayments));
+                updateUI();
+                saveGame();
+                updateShopTab();
+                updateProfileTab();
+
+                if (found > 0) {
+                    alert(`Оплачено! Получено ${found} пакетов звёзд.`);
+                } else {
+                    alert('Оплаченных счетов не найдено. Нажмите "Проверить оплату" после оплаты счёта в чате с ботом.');
+                }
+            });
+        }
+
         // Обновление интерфейса
         function updateUI() {
-            // Значения с пульсацией
             ui.polymer.textContent = Math.floor(state.polymer);
             pulseElement(ui.polymer);
             ui.energy.textContent = Math.floor(state.energy);
@@ -185,8 +290,7 @@
             ui.stars.textContent = Math.floor(state.stars);
             pulseElement(ui.stars);
 
-            // Цвет энергии: красный если меньше 10
-            if (state.energy < 40) {
+            if (state.energy < 30) {
                 ui.energy.style.color = '#cc0000';
                 ui.energy.style.textShadow = '0 0 6px #cc0000';
             } else {
@@ -198,7 +302,6 @@
             ui.incomeDisplay.textContent = (state.robots * 0.1).toFixed(1);
             ui.robotCost.textContent = state.robotCost;
 
-            // Смена
             const now = new Date();
             const hour = now.getHours();
             let shift = 'Ночная (00-06)';
@@ -207,21 +310,17 @@
             else if (hour >= 18) shift = 'Вечерняя (18-00)';
             ui.timeDisplay.textContent = `Смена: ${shift}`;
 
-            // Лампы
             if (ui.lampShift) ui.lampShift.className = 'lamp on';
             if (ui.lampNormal) ui.lampNormal.className = 'status-lamp on';
             if (ui.lampCollapse) ui.lampCollapse.className = 'status-lamp off';
 
-            // Следующий коллапс
             if (ui.nextCollapseTime) {
                 ui.nextCollapseTime.textContent = getNextCollapseTime();
             }
 
-            // Обновляем профиль если он открыт
             updateProfileTab();
         }
 
-        // Добыча неочищенного полимера (клик по красной кнопке)
         function harvest() {
             state.polymer += state.baseClickValue;
             updateUI();
@@ -229,7 +328,6 @@
             createSparks();
         }
 
-        // Покупка робота
         function buyRobot() {
             if (state.polymer >= state.robotCost) {
                 state.polymer -= state.robotCost;
@@ -239,18 +337,17 @@
                 updateUI();
                 saveGame();
             } else {
-                alert('Недостаточно неочищенного полимера, товарищ.');
+                alert('Недостаточно отработки, товарищ.');
             }
         }
 
-        // Конвертация: 100 неочищенного + 10 энергии → 1 очищенный
         function convertPolymer() {
             if (state.polymer < 100) {
-                alert('Недостаточно неочищенного полимера. Нужно 100.');
+                alert('Недостаточно отработки. Нужно 100.');
                 return;
             }
             if (state.energy < 10) {
-                alert('Недостаточно энергии. Нужно 10. Восстановите энергию или ждите коллапса.');
+                alert('Недостаточно энергии. Нужно 10.');
                 return;
             }
             state.polymer -= 100;
@@ -260,7 +357,6 @@
             saveGame();
         }
 
-        // Автосбор от роботов
         function autoCollect() {
             if (state.robots > 0) {
                 state.polymer += state.robots * 0.1;
@@ -268,7 +364,6 @@
             }
         }
 
-        // Сохранение
         function saveGame() {
             try {
                 localStorage.setItem('polymeria_save', JSON.stringify(state));
@@ -377,7 +472,7 @@
             const btnInviteFriend = document.getElementById('btn-invite-friend');
 
             if (btnBuyStars) btnBuyStars.addEventListener('click', () => {
-                alert('Магазин звёзд откроется здесь.\nОплата через Telegram Stars.');
+                switchTab('shop');
             });
             if (btnWithdrawStars) btnWithdrawStars.addEventListener('click', () => {
                 if (state.stars <= 0) {
@@ -398,6 +493,22 @@
                 newBtn.addEventListener('click', claimBonus);
                 updateBonusButton();
                 setInterval(updateBonusButton, 1000);
+            }
+
+            // Кнопки пополнения в магазине
+            const shopGoldBtns = document.querySelectorAll('.shop-item-btn.gold');
+            const packKeys = ['test1', 'pack100', 'pack250', 'pack500', 'pack1000'];
+            
+            shopGoldBtns.forEach((btn, index) => {
+                if (packKeys[index]) {
+                    btn.addEventListener('click', () => buyStars(packKeys[index]));
+                }
+            });
+
+            // Кнопка проверки оплаты
+            const btnCheckPayment = document.getElementById('btn-check-payment');
+            if (btnCheckPayment) {
+                btnCheckPayment.addEventListener('click', checkPayments);
             }
         }
 
