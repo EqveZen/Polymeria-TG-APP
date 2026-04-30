@@ -216,7 +216,7 @@
             }
         }
 
-        function renderTaskList(containerId, tasks, type, dim) {
+ function renderTaskList(containerId, tasks, type, dim) {
             const container = document.getElementById(containerId);
             if (!container || !tasks.length) return;
             let html = '';
@@ -253,7 +253,14 @@
                         <span class="task-item-reward">Награда: ${task.reward.amount} ${task.reward.type === 'tickets' ? 'БП' : task.reward.type === 'polymer' ? 'отработки' : task.reward.type === 'purified' ? 'полимера' : task.reward.type === 'energy' ? 'энергии' : 'звёзд'}</span>
                         <span class="task-item-progress">${progressText}</span>
                     </div>
-                    ${done ? '<span class="task-done">ВЫПОЛНЕНО</span>' : `<button class="task-claim-btn" ${(dim || !isTaskComplete(task)) ? 'disabled' : ''} data-type="${type}" data-id="${task.id}">ЗАБРАТЬ</button>`}
+                    ${done ? '<span class="task-done">ВЫПОЛНЕНО</span>' : 
+                        (type === 'social' || type === 'investor') ?
+                            `<div>
+                                <button class="task-claim-btn task-go-btn" data-type="${type}" data-id="${task.id}" data-target="${task.target || ''}">ПЕРЕЙТИ</button>
+                                <button class="task-claim-btn task-check-btn" data-type="${type}" data-id="${task.id}" data-target="${task.target || ''}" style="margin-top:2px;">ПОЛУЧИТЬ</button>
+                            </div>`
+                            : `<button class="task-claim-btn" ${(dim || !isTaskComplete(task)) ? 'disabled' : ''} data-type="${type}" data-id="${task.id}">ЗАБРАТЬ</button>`
+                    }
                 </div>`;
             });
             container.innerHTML = html;
@@ -261,6 +268,30 @@
             container.querySelectorAll('.task-claim-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     claimTaskReward(btn.getAttribute('data-type'), btn.getAttribute('data-id'));
+                });
+            });
+
+            container.querySelectorAll('.task-go-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const target = btn.getAttribute('data-target');
+                    if (target && window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.openTelegramLink('https://t.me/' + target.replace('@', ''));
+                    } else if (target) {
+                        window.open('https://t.me/' + target.replace('@', ''), '_blank');
+                    }
+                });
+            });
+
+            container.querySelectorAll('.task-check-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const type = btn.getAttribute('data-type');
+                    const taskId = btn.getAttribute('data-id');
+                    const target = btn.getAttribute('data-target');
+                    if (type === 'social' || type === 'investor') {
+                        checkSubscriptionAndClaim(type, taskId, target);
+                    }
                 });
             });
         }
@@ -316,6 +347,37 @@
             else state.polymer += 100 + level * 5;
             updateUI();
             saveGame();
+        }
+
+async function checkSubscriptionAndClaim(type, taskId, target) {
+            if (!window.Polymeria.cloudAvailable || !window.Telegram || !window.Telegram.WebApp) {
+                alert('Проверка подписки доступна только в Telegram.');
+                return;
+            }
+
+            const userId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
+            if (!userId) {
+                alert('Ошибка: не удалось получить ID пользователя.');
+                return;
+            }
+
+            const BOT_TOKEN = window.Polymeria.BOT_TOKEN || '8630005573:AAHRhjXHdSw0Yqz-jUhHEPqpQnMEVhD0_7o';
+            if (!BOT_TOKEN) {
+                alert('Токен бота не настроен.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${target}&user_id=${userId}`);
+                const data = await res.json();
+                if (data.ok && data.result && ['member', 'administrator', 'creator'].includes(data.result.status)) {
+                    claimTaskReward(type, taskId);
+                } else {
+                    alert('Подписка не найдена. Убедитесь что вы подписались на ' + target);
+                }
+            } catch(e) {
+                alert('Ошибка проверки. Попробуйте позже.');
+            }
         }
 
         function getNextCollapseTime() {
