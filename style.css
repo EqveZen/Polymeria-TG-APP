@@ -229,3 +229,46 @@ body::after { content: ""; position: fixed; bottom: -120px; left: -60px; width: 
     border-color: #a44 !important;
     color: #a44 !important;
 }
+
+/* Pass статус */
+.pass-status {
+    text-align: center;
+    padding: 8px;
+}
+.pass-status-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+.pass-status-badge.soon {
+    background: #1a1a1a;
+    border: 2px solid #ffd700;
+    color: #ffd700;
+    text-shadow: 0 0 8px #ffd700;
+    animation: blink-lamp 3s ease-in-out infinite;
+}
+.pass-status-badge.active {
+    background: #1a2a1a;
+    border: 2px solid #00ffcc;
+    color: #00ffcc;
+    text-shadow: 0 0 8px #00ffcc;
+}
+.pass-status-badge.ended {
+    background: #1a1a1a;
+    border: 2px solid #666;
+    color: #666;
+}
+.pass-timer {
+    display: block;
+    font-size: 0.7em;
+    color: #888;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+}
+.pass-timer.urgent {
+    color: #ff4444;
+}

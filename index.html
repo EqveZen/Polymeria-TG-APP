@@ -72,12 +72,16 @@
     <div id="tab-tasks" class="tab-content hidden">
         <div class="panel tasks-panel">
             <h2>СТАХАНОВСКИЙ БИЛЕТ</h2>
-            <div class="pass-bar" id="pass-bar">
-                <div class="pass-level">Уровень <span id="pass-level">1</span>/100</div>
-                <div class="pass-progress"><div class="pass-fill" id="pass-fill" style="width:0%"></div></div>
-                <div class="pass-tickets"><span id="pass-tickets">0</span>/100 БП</div>
-                <div class="pass-reward" id="pass-reward">Награда: 100 отработки</div>
-                <button class="pass-buy-btn" id="btn-buy-pass">КУПИТЬ ЗА 150 ЗВЁЗД</button>
+<div class="pass-bar" id="pass-bar">
+                <div class="pass-status" id="pass-status">
+                    <span class="pass-status-badge" id="pass-badge">СКОРО</span>
+                    <span class="pass-timer" id="pass-timer">--</span>
+                </div>
+                <div class="pass-level hidden" id="pass-level-block">Уровень <span id="pass-level">1</span>/100</div>
+                <div class="pass-progress hidden" id="pass-progress-block"><div class="pass-fill" id="pass-fill" style="width:0%"></div></div>
+                <div class="pass-tickets hidden" id="pass-tickets-block"><span id="pass-tickets">0</span>/100 БП</div>
+                <div class="pass-reward hidden" id="pass-reward-block">Награда: <span id="pass-reward-text">—</span></div>
+                <button class="pass-buy-btn hidden" id="btn-buy-pass">КУПИТЬ ЗА 150 ⭐️</button>
                 <button class="pass-claim-btn hidden" id="btn-claim-pass">ЗАБРАТЬ НАГРАДУ</button>
             </div>
 

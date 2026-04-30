@@ -1,4 +1,4 @@
-// main.js — Polymeria v0.6 (Стахановский билет + задачи)
+// main.js — Polymeria v0.6 (Стахановский билет + задачи + таймер сезона)
 (function() {
     'use strict';
     try {
@@ -9,12 +9,15 @@
             polymer: 0, purified: 0, energy: 100, stars: 0,
             robots: 0, baseClickValue: 1, robotCost: 10, incomePerSec: 0,
             lastSave: null,
+            // Pass
             passOwned: false, passLevel: 1, passTickets: 0,
             passRewardsClaimed: [],
+            // Задачи
             dailyTasks: [], passTasks: [],
             dailyTaskDate: '', passTaskDate: '',
             completedDaily: [], completedPass: [],
             completedSocial: [], completedInvestor: [],
+            // Статистика для задач
             dailyPolymerEarned: 0, clicksToday: 0,
             playtimeSession: 0, sessionStart: Date.now(),
             energySpentSession: 0,
@@ -46,6 +49,73 @@
             .then(r => r.json())
             .then(d => { tasksData = d; initTasks(); })
             .catch(e => console.error('Tasks load error:', e));
+
+        // Даты Pass
+        const PASS_START = new Date('2026-05-01T00:00:00+03:00').getTime();
+        const PASS_END = PASS_START + 60 * 24 * 60 * 60 * 1000;
+
+        function getPassStatus() {
+            const now = Date.now();
+            if (now < PASS_START) return 'soon';
+            if (now >= PASS_END) return 'ended';
+            return 'active';
+        }
+
+        function updatePassTimer() {
+            const now = Date.now();
+            const status = getPassStatus();
+            const badge = document.getElementById('pass-badge');
+            const timer = document.getElementById('pass-timer');
+            const levelBlock = document.getElementById('pass-level-block');
+            const progressBlock = document.getElementById('pass-progress-block');
+            const ticketsBlock = document.getElementById('pass-tickets-block');
+            const rewardBlock = document.getElementById('pass-reward-block');
+            const buyBtn = document.getElementById('btn-buy-pass');
+            const claimBtn = document.getElementById('btn-claim-pass');
+
+            if (!badge || !timer) return;
+
+            if (status === 'soon') {
+                badge.textContent = 'СКОРО';
+                badge.className = 'pass-status-badge soon';
+                const left = PASS_START - now;
+                const days = Math.floor(left / 86400000);
+                const hours = Math.floor((left % 86400000) / 3600000);
+                const mins = Math.floor((left % 3600000) / 60000);
+                timer.textContent = `Сезон 1 начнётся через ${days}д ${hours}ч ${mins}м`;
+                timer.className = 'pass-timer';
+                if (levelBlock) levelBlock.classList.add('hidden');
+                if (progressBlock) progressBlock.classList.add('hidden');
+                if (ticketsBlock) ticketsBlock.classList.add('hidden');
+                if (rewardBlock) rewardBlock.classList.add('hidden');
+                if (buyBtn) buyBtn.classList.add('hidden');
+                if (claimBtn) claimBtn.classList.add('hidden');
+            } else if (status === 'active') {
+                badge.textContent = 'АКТИВЕН';
+                badge.className = 'pass-status-badge active';
+                const left = PASS_END - now;
+                const days = Math.floor(left / 86400000);
+                const hours = Math.floor((left % 86400000) / 3600000);
+                timer.textContent = `До конца сезона: ${days}д ${hours}ч`;
+                timer.className = 'pass-timer';
+                if (levelBlock) levelBlock.classList.remove('hidden');
+                if (progressBlock) progressBlock.classList.remove('hidden');
+                if (ticketsBlock) ticketsBlock.classList.remove('hidden');
+                if (rewardBlock) rewardBlock.classList.remove('hidden');
+                updateTasksUI();
+            } else {
+                badge.textContent = 'ЗАВЕРШЁН';
+                badge.className = 'pass-status-badge ended';
+                timer.textContent = 'Сезон 1 окончен. Ждите Сезон 2.';
+                timer.className = 'pass-timer';
+                if (levelBlock) levelBlock.classList.add('hidden');
+                if (progressBlock) progressBlock.classList.add('hidden');
+                if (ticketsBlock) ticketsBlock.classList.add('hidden');
+                if (rewardBlock) rewardBlock.classList.add('hidden');
+                if (buyBtn) buyBtn.classList.add('hidden');
+                if (claimBtn) claimBtn.classList.add('hidden');
+            }
+        }
 
         function getTarget(type) {
             const inc = state.incomePerSec || 0.1;
@@ -110,58 +180,31 @@
                 case 'clicks': return state.clicksToday;
                 case 'playtime': case 'playtime_long':
                     return Math.floor((Date.now() - state.sessionStart) / 60000);
-                case 'survive_collapse': case 'survive_collapse_risk':
-                    return 0;
-                case 'survive_collapse_x2': return 0;
-                case 'watch_ad': case 'watch_ad_x2': return 0;
-                case 'shop_buy': case 'shop_buy_x2': return 0;
                 default: return 0;
             }
         }
 
         function isTaskComplete(task) {
             const prog = getTaskProgress(task);
-            let target;
-            if (task.type.includes('harvest') || task.type.includes('accumulate')) {
-                target = getTarget(task.type);
-            } else if (task.type === 'buy_robots') {
-                target = getTarget('buy_robots');
-            } else if (task.type === 'buy_robots_large') {
-                target = 15;
-            } else if (task.type === 'buy_multiple') {
-                target = 10;
-            } else if (task.type === 'buy_robots_consecutive') {
-                target = 3;
-            } else if (task.type === 'buy_consecutive') {
-                target = 5;
-            } else if (task.type.includes('convert')) {
-                target = getTarget('convert');
-                if (task.type === 'convert_mass') target = 5;
-            } else if (task.type.includes('spend_energy')) {
-                target = getTarget('spend_energy');
-            } else if (task.type === 'spend_energy_session') {
-                target = getTarget('spend_energy_session');
-            } else if (task.type === 'clicks') {
-                target = getTarget('clicks');
-            } else if (task.type === 'playtime') {
-                target = 15;
-            } else if (task.type === 'playtime_long') {
-                target = 30;
-            } else if (task.type === 'survive_collapse_risk') {
-                target = 1;
-            } else if (task.type === 'survive_collapse_x2') {
-                target = 2;
-            } else if (task.type === 'watch_ad') {
-                target = 1;
-            } else if (task.type === 'watch_ad_x2') {
-                target = 2;
-            } else if (task.type === 'shop_buy') {
-                target = 1;
-            } else if (task.type === 'shop_buy_x2') {
-                target = 2;
-            } else {
-                target = 1;
-            }
+            let target = 1;
+            if (task.type.includes('harvest') || task.type.includes('accumulate')) target = getTarget(task.type);
+            else if (task.type === 'buy_robots') target = getTarget('buy_robots');
+            else if (task.type === 'buy_robots_large') target = 15;
+            else if (task.type === 'buy_multiple') target = 10;
+            else if (task.type === 'buy_robots_consecutive') target = 3;
+            else if (task.type === 'buy_consecutive') target = 5;
+            else if (task.type.includes('convert')) { target = getTarget('convert'); if (task.type === 'convert_mass') target = 5; }
+            else if (task.type.includes('spend_energy')) target = getTarget('spend_energy');
+            else if (task.type === 'spend_energy_session') target = getTarget('spend_energy_session');
+            else if (task.type === 'clicks') target = getTarget('clicks');
+            else if (task.type === 'playtime') target = 15;
+            else if (task.type === 'playtime_long') target = 30;
+            else if (task.type === 'survive_collapse_risk') target = 1;
+            else if (task.type === 'survive_collapse_x2') target = 2;
+            else if (task.type === 'watch_ad') target = 1;
+            else if (task.type === 'watch_ad_x2') target = 2;
+            else if (task.type === 'shop_buy') target = 1;
+            else if (task.type === 'shop_buy_x2') target = 2;
             return prog >= target;
         }
 
@@ -199,7 +242,7 @@
                 '1000 отработки','1000 отработки','1000 отработки','1000 отработки',
                 'Скин «Золотой пульт» +10 звёзд'
             ];
-            document.getElementById('pass-reward').textContent = 'Награда: ' + (passRewards[state.passLevel] || '—');
+            document.getElementById('pass-reward-text').textContent = passRewards[state.passLevel] || '—';
 
             const buyBtn = document.getElementById('btn-buy-pass');
             const claimBtn = document.getElementById('btn-claim-pass');
@@ -216,7 +259,7 @@
             }
         }
 
- function renderTaskList(containerId, tasks, type, dim) {
+        function renderTaskList(containerId, tasks, type, dim) {
             const container = document.getElementById(containerId);
             if (!container || !tasks.length) return;
             let html = '';
@@ -253,14 +296,7 @@
                         <span class="task-item-reward">Награда: ${task.reward.amount} ${task.reward.type === 'tickets' ? 'БП' : task.reward.type === 'polymer' ? 'отработки' : task.reward.type === 'purified' ? 'полимера' : task.reward.type === 'energy' ? 'энергии' : 'звёзд'}</span>
                         <span class="task-item-progress">${progressText}</span>
                     </div>
-                    ${done ? '<span class="task-done">ВЫПОЛНЕНО</span>' : 
-                        (type === 'social' || type === 'investor') ?
-                            `<div>
-                                <button class="task-claim-btn task-go-btn" data-type="${type}" data-id="${task.id}" data-target="${task.target || ''}">ПЕРЕЙТИ</button>
-                                <button class="task-claim-btn task-check-btn" data-type="${type}" data-id="${task.id}" data-target="${task.target || ''}" style="margin-top:2px;">ПОЛУЧИТЬ</button>
-                            </div>`
-                            : `<button class="task-claim-btn" ${(dim || !isTaskComplete(task)) ? 'disabled' : ''} data-type="${type}" data-id="${task.id}">ЗАБРАТЬ</button>`
-                    }
+                    ${done ? '<span class="task-done">ВЫПОЛНЕНО</span>' : `<button class="task-claim-btn" ${(dim || !isTaskComplete(task)) ? 'disabled' : ''} data-type="${type}" data-id="${task.id}">ЗАБРАТЬ</button>`}
                 </div>`;
             });
             container.innerHTML = html;
@@ -270,33 +306,9 @@
                     claimTaskReward(btn.getAttribute('data-type'), btn.getAttribute('data-id'));
                 });
             });
-
-            container.querySelectorAll('.task-go-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const target = btn.getAttribute('data-target');
-                    if (target && window.Telegram && window.Telegram.WebApp) {
-                        window.Telegram.WebApp.openTelegramLink('https://t.me/' + target.replace('@', ''));
-                    } else if (target) {
-                        window.open('https://t.me/' + target.replace('@', ''), '_blank');
-                    }
-                });
-            });
-
-            container.querySelectorAll('.task-check-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const type = btn.getAttribute('data-type');
-                    const taskId = btn.getAttribute('data-id');
-                    const target = btn.getAttribute('data-target');
-                    if (type === 'social' || type === 'investor') {
-                        checkSubscriptionAndClaim(type, taskId, target);
-                    }
-                });
-            });
         }
 
-function claimTaskReward(type, taskId) {
+        function claimTaskReward(type, taskId) {
             let taskList = type === 'pass' ? state.passTasks :
                            type === 'daily' ? state.dailyTasks :
                            type === 'social' ? tasksData.socialTasks :
@@ -308,7 +320,6 @@ function claimTaskReward(type, taskId) {
             const task = taskList.find(t => t.id === taskId);
             if (!task || completed.includes(taskId)) return;
 
-            // Для соц. и инвестор-задач — просто зачисляем награду без проверки
             if (type === 'social' || type === 'investor') {
                 if (task.type === 'subscribe' || task.type === 'subscribe_channel' || task.type === 'join_chat') {
                     completed.push(taskId);
@@ -317,7 +328,6 @@ function claimTaskReward(type, taskId) {
                     updateUI();
                     updateTasksUI();
                     saveGame();
-                    // Открываем ссылку для подписки
                     if (task.target && task.target.startsWith('@')) {
                         window.open(`https://t.me/${task.target.replace('@','')}`, '_blank');
                     }
@@ -365,37 +375,6 @@ function claimTaskReward(type, taskId) {
             else state.polymer += 100 + level * 5;
             updateUI();
             saveGame();
-        }
-
-async function checkSubscriptionAndClaim(type, taskId, target) {
-            if (!window.Polymeria.cloudAvailable || !window.Telegram || !window.Telegram.WebApp) {
-                alert('Проверка подписки доступна только в Telegram.');
-                return;
-            }
-
-            const userId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
-            if (!userId) {
-                alert('Ошибка: не удалось получить ID пользователя.');
-                return;
-            }
-
-            const BOT_TOKEN = window.Polymeria.BOT_TOKEN || '8630005573:AAHRhjXHdSw0Yqz-jUhHEPqpQnMEVhD0_7o';
-            if (!BOT_TOKEN) {
-                alert('Токен бота не настроен.');
-                return;
-            }
-
-            try {
-                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${target}&user_id=${userId}`);
-                const data = await res.json();
-                if (data.ok && data.result && ['member', 'administrator', 'creator'].includes(data.result.status)) {
-                    claimTaskReward(type, taskId);
-                } else {
-                    alert('Подписка не найдена. Убедитесь что вы подписались на ' + target);
-                }
-            } catch(e) {
-                alert('Ошибка проверки. Попробуйте позже.');
-            }
         }
 
         function getNextCollapseTime() {
@@ -617,7 +596,6 @@ async function checkSubscriptionAndClaim(type, taskId, target) {
                 if (ui.nextCollapseTime) ui.nextCollapseTime.textContent = getNextCollapseTime();
             }, 60000);
 
-            // Intro
             const introModal = document.getElementById('intro-modal');
             const btnStart = document.getElementById('btn-start-shift');
             if (introModal && btnStart) {
@@ -635,7 +613,6 @@ async function checkSubscriptionAndClaim(type, taskId, target) {
                 else introModal.classList.remove('hidden');
             }
 
-            // Nav
             const navBtns = document.querySelectorAll('.nav-btn');
             const tabs = document.querySelectorAll('.tab-content');
             function switchTab(name) {
@@ -647,15 +624,13 @@ async function checkSubscriptionAndClaim(type, taskId, target) {
                 if (tt) { tt.classList.remove('hidden'); tt.classList.add('active'); }
                 if (name === 'profile') { updateProfileTab(); updateBonusButton(); }
                 if (name === 'shop') updateShopTab();
-                if (name === 'tasks') { initTasks(); updateTasksUI(); }
+                if (name === 'tasks') { initTasks(); updateTasksUI(); updatePassTimer(); }
             }
             navBtns.forEach(b => b.addEventListener('click', () => switchTab(b.getAttribute('data-tab'))));
 
-            // Profile buttons
             document.getElementById('btn-withdraw-stars')?.addEventListener('click', () => alert('Вывод звёзд.\nФункция появится позже.'));
             document.getElementById('btn-invite-friend')?.addEventListener('click', () => alert('Пригласи друга.\nРеферальная система скоро заработает.'));
 
-            // Bonus
             const btnDailyBonus = document.getElementById('btn-daily-bonus');
             if (btnDailyBonus) {
                 const nb = btnDailyBonus.cloneNode(true);
@@ -665,7 +640,6 @@ async function checkSubscriptionAndClaim(type, taskId, target) {
                 setInterval(updateBonusButton, 1000);
             }
 
-            // Pass buttons
             document.getElementById('btn-buy-pass')?.addEventListener('click', () => {
                 if (state.stars >= 150) {
                     state.stars -= 150;
@@ -689,7 +663,9 @@ async function checkSubscriptionAndClaim(type, taskId, target) {
                 }
             });
 
-            // Midnight reset
+            updatePassTimer();
+            setInterval(updatePassTimer, 60000);
+
             setInterval(() => {
                 const today = new Date().toDateString();
                 if (state.dailyTaskDate !== today) initTasks();
