@@ -296,7 +296,7 @@
             });
         }
 
-        function claimTaskReward(type, taskId) {
+function claimTaskReward(type, taskId) {
             let taskList = type === 'pass' ? state.passTasks :
                            type === 'daily' ? state.dailyTasks :
                            type === 'social' ? tasksData.socialTasks :
@@ -307,6 +307,24 @@
                             state.completedInvestor;
             const task = taskList.find(t => t.id === taskId);
             if (!task || completed.includes(taskId)) return;
+
+            // Для соц. и инвестор-задач — просто зачисляем награду без проверки
+            if (type === 'social' || type === 'investor') {
+                if (task.type === 'subscribe' || task.type === 'subscribe_channel' || task.type === 'join_chat') {
+                    completed.push(taskId);
+                    const reward = task.reward;
+                    if (reward.type === 'stars') state.stars += reward.amount;
+                    updateUI();
+                    updateTasksUI();
+                    saveGame();
+                    // Открываем ссылку для подписки
+                    if (task.target && task.target.startsWith('@')) {
+                        window.open(`https://t.me/${task.target.replace('@','')}`, '_blank');
+                    }
+                    return;
+                }
+            }
+
             if (!isTaskComplete(task)) return;
 
             completed.push(taskId);
