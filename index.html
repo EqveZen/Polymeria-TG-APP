@@ -8,10 +8,8 @@
 </head>
 <body>
 <div id="app">
-    <!-- Контейнер пульта (видим по умолчанию) -->
     <div id="tab-control" class="tab-content active">
 
-    <!-- Верхняя панель с названием и лампой смены -->
     <header class="panel control-panel">
         <div class="panel-title">
             <span class="lamp on"></span>
@@ -21,7 +19,6 @@
         <div id="time-display">Смена: --</div>
     </header>
 
-    <!-- Секция индикаторов -->
     <div class="panel gauges">
         <div class="gauge" id="gauge-polymer">
             <div class="gauge-label">Отработка</div>
@@ -41,205 +38,154 @@
         </div>
     </div>
 
-    <!-- Главная красная кнопка -->
     <div class="panel action-panel">
-        <button id="btn-harvest" class="big-red-button">
-            РАБОТАТЬ
-        </button>
+        <button id="btn-harvest" class="big-red-button">РАБОТАТЬ</button>
     </div>
 
-    <!-- Панель автоматики: роботы, конвертация -->
     <div class="panel robots-panel">
-        <h3>🤖 АВТОМАТИКА</h3>
+        <h3>АВТОМАТИКА</h3>
         <div class="robot-stats">
-            <div class="indicator">
-                <span class="indicator-label">Роботов</span>
-                <span class="indicator-value" id="robot-count">0</span>
-            </div>
-            <div class="indicator">
-                <span class="indicator-label">Доход/сек</span>
-                <span class="indicator-value" id="income-per-sec">0</span>
-            </div>
-            <div class="indicator">
-                <span class="indicator-label">Цена</span>
-                <span class="indicator-value" id="robot-cost">10</span>
-            </div>
+            <div class="indicator"><span class="indicator-label">Роботов</span><span class="indicator-value" id="robot-count">0</span></div>
+            <div class="indicator"><span class="indicator-label">Доход/сек</span><span class="indicator-value" id="income-per-sec">0</span></div>
+            <div class="indicator"><span class="indicator-label">Цена</span><span class="indicator-value" id="robot-cost">10</span></div>
         </div>
-        <button id="btn-buy-robot" class="toggle-switch">
-            <span class="switch-knob"></span> ПРИОБРЕСТИ РОБОТА
-        </button>
-
+        <button id="btn-buy-robot" class="toggle-switch"><span class="switch-knob"></span> ПРИОБРЕСТИ РОБОТА</button>
         <div class="conversion-section">
             <div class="conversion-info">
-<span>Очистка: 100 отработки + 10 энергии → 1 полимер</span>
-                <button id="btn-convert" class="toggle-switch" style="margin-top:6px;">
-                    <span class="switch-knob"></span> ОЧИСТИТЬ
-                </button>
+                <span>Очистка: 100 отработки + 10 энергии → 1 полимер</span>
+                <button id="btn-convert" class="toggle-switch" style="margin-top:6px;"><span class="switch-knob"></span> ОЧИСТИТЬ</button>
             </div>
         </div>
     </div>
 
-    <!-- Лампы состояния и коллапс -->
     <div class="panel status-panel">
         <div class="status-row">
-            <span class="status-lamp on" id="lamp-normal"></span>
-            <span>Норма</span>
-            <span class="status-lamp off" id="lamp-collapse"></span>
-            <span>Коллапс</span>
+            <span class="status-lamp on" id="lamp-normal"></span><span>Норма</span>
+            <span class="status-lamp off" id="lamp-collapse"></span><span>Коллапс</span>
         </div>
         <small>Ближайшая проверка: <span id="next-collapse-time">--</span></small>
     </div>
 
-    </div><!-- конец tab-control -->
+    </div>
 
-    <!-- Заглушка: Задачи -->
+    <!-- Задачи и Pass -->
     <div id="tab-tasks" class="tab-content hidden">
-        <div class="panel placeholder-panel">
-            <h2>📋 ЗАДАЧИ</h2>
-            <p>Список задач появится здесь.</p>
+        <div class="panel tasks-panel">
+            <h2>СТАХАНОВСКИЙ БИЛЕТ</h2>
+            <div class="pass-bar" id="pass-bar">
+                <div class="pass-level">Уровень <span id="pass-level">1</span>/100</div>
+                <div class="pass-progress"><div class="pass-fill" id="pass-fill" style="width:0%"></div></div>
+                <div class="pass-tickets"><span id="pass-tickets">0</span>/100 БП</div>
+                <div class="pass-reward" id="pass-reward">Награда: 100 отработки</div>
+                <button class="pass-buy-btn" id="btn-buy-pass">КУПИТЬ ЗА 150 ЗВЁЗД</button>
+                <button class="pass-claim-btn hidden" id="btn-claim-pass">ЗАБРАТЬ НАГРАДУ</button>
+            </div>
+
+            <div class="task-block" id="pass-tasks-block">
+                <h3>Задачи Pass</h3>
+                <div id="pass-tasks-list"></div>
+            </div>
+
+            <div class="task-block" id="daily-tasks-block">
+                <h3>Ежедневные задания</h3>
+                <div id="daily-tasks-list"></div>
+            </div>
+
+            <div class="task-block" id="social-tasks-block">
+                <h3>Социальные задачи</h3>
+                <div id="social-tasks-list"></div>
+            </div>
+
+            <div class="task-block" id="investor-tasks-block">
+                <h3>Задачи Инвестора</h3>
+                <div id="investor-tasks-list"></div>
+                <div class="investor-placeholder">
+                    <img src="images/investor.png" alt="Инвестору" onerror="this.style.display='none'">
+                    <p>Этому заводу нужен инвестор</p>
+                </div>
+            </div>
         </div>
     </div>
 
-<!-- Магазин -->
+    <!-- Магазин -->
     <div id="tab-shop" class="tab-content hidden">
         <div class="panel shop-panel">
             <h2>МАГАЗИН</h2>
-            <div class="shop-balance">
-                Доступно звёзд: <span id="shop-stars">0</span>
-            </div>
-
+            <div class="shop-balance">Доступно звёзд: <span id="shop-stars">0</span></div>
             <div class="shop-section">
-                <h3>Пополнение звёзд (+20% бонус)</h3>
-                <div class="shop-item">
-                    <div class="shop-item-info">
-                        <span class="shop-item-name">1 звезда (тест)</span>
-                        <span class="shop-item-desc">проверка оплаты</span>
-                    </div>
-                    <button class="shop-item-btn gold">1 ⭐</button>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-info">
-                        <span class="shop-item-name">100 звёзд</span>
-                        <span class="shop-item-desc">+20 бонус = 120</span>
-                    </div>
-                    <button class="shop-item-btn gold">100 ⭐</button>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-info">
-                        <span class="shop-item-name">250 звёзд</span>
-                        <span class="shop-item-desc">+50 бонус = 300</span>
-                    </div>
-                    <button class="shop-item-btn gold">250 ⭐</button>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-info">
-                        <span class="shop-item-name">500 звёзд</span>
-                        <span class="shop-item-desc">+100 бонус = 600</span>
-                    </div>
-                    <button class="shop-item-btn gold">500 ⭐</button>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-info">
-                        <span class="shop-item-name">1000 звёзд</span>
-                        <span class="shop-item-desc">+200 бонус = 1200</span>
-                    </div>
-                    <button class="shop-item-btn gold">1000 ⭐</button>
-                </div>
+                <h3>Бустеры</h3>
+                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">Удвоение дохода</span><span class="shop-item-desc">x2 на 1 час</span></div><button class="shop-item-btn">15 звёзд</button></div>
+                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">Мгновенные роботы</span><span class="shop-item-desc">+5 роботов</span></div><button class="shop-item-btn">15 звёзд</button></div>
+            </div>
+            <div class="shop-section">
+                <h3>Улучшения</h3>
+                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">Усиление клика</span><span class="shop-item-desc">+2 к добыче</span></div><button class="shop-item-btn">20 звёзд</button></div>
             </div>
         </div>
     </div>
 
-<!-- Профиль -->
+    <!-- Профиль -->
     <div id="tab-profile" class="tab-content hidden">
         <div class="panel profile-panel">
             <div class="profile-header">
-                <div class="profile-photo" id="profile-photo-container">
-                    <img src="images/engineer.png" alt="Инженер" id="profile-photo-img">
-                </div>
+                <div class="profile-photo" id="profile-photo-container"><img src="engineer.png" alt="Инженер" id="profile-photo-img"></div>
                 <div class="profile-name" id="profile-name">Инженер Полимерия-1</div>
                 <div class="profile-rank">Дежурный 3-й смены</div>
             </div>
-
-            <div class="profile-stars-section">
-                <div>
-                    <span class="profile-stars-label">Баланс звёзд</span>
-                    <div class="profile-stars-value" id="profile-stars">0</div>
-                </div>
-            </div>
-
+            <div class="profile-stars-section"><div><span class="profile-stars-label">Баланс звёзд</span><div class="profile-stars-value" id="profile-stars">0</div></div></div>
             <div class="profile-stats">
-                <div class="profile-stat">
-                    <span class="profile-stat-label">Отработка</span>
-                    <span class="profile-stat-value" id="profile-polymer">0</span>
-                </div>
-                <div class="profile-stat">
-                    <span class="profile-stat-label">Полимер</span>
-                    <span class="profile-stat-value" id="profile-purified">0</span>
-                </div>
-                <div class="profile-stat">
-                    <span class="profile-stat-label">Роботов</span>
-                    <span class="profile-stat-value" id="profile-robots">0</span>
-                </div>
+                <div class="profile-stat"><span class="profile-stat-label">Отработка</span><span class="profile-stat-value" id="profile-polymer">0</span></div>
+                <div class="profile-stat"><span class="profile-stat-label">Полимер</span><span class="profile-stat-value" id="profile-purified">0</span></div>
+                <div class="profile-stat"><span class="profile-stat-label">Роботов</span><span class="profile-stat-value" id="profile-robots">0</span></div>
             </div>
-
             <div class="profile-actions">
-                <button class="profile-btn gold" id="btn-buy-stars">
-                    ⬇️ ПОПОЛНИТЬ ЗВЁЗДЫ ⬇️
-                </button>
-                <button class="profile-btn" id="btn-withdraw-stars">
-                    ⬆️ ВЫВЕСТИ ЗВЁЗДЫ ⬆️
-                </button>
-                <button class="profile-btn" id="btn-daily-bonus">
-                    🎁 ЕЖЕДНЕВНЫЙ БОНУС 🎁
-                </button>
-                <button class="profile-btn" id="btn-invite-friend">
-                    ⚡️ ПРИГЛАСИТЬ ДРУГА ⚡️
-                </button>
+                <button class="profile-btn gold" id="btn-daily-bonus">СУТОЧНЫЙ БОНУС</button>
+                <button class="profile-btn" id="btn-withdraw-stars">ВЫВЕСТИ ЗВЁЗДЫ</button>
+                <button class="profile-btn" id="btn-invite-friend">ПРИГЛАСИТЬ ДРУГА</button>
             </div>
-
-            <div class="profile-footer">
-                Polymeria | Москва, 1955 (альт.)
-            </div>
+            <div class="profile-footer">Polymeria | Москва, 1955 (альт.)</div>
         </div>
     </div>
 
-    <!-- Модальное окно коллапса -->
     <div id="collapse-modal" class="modal hidden"></div>
 
-    <!-- Приветственное окно -->
     <div id="intro-modal" class="modal hidden">
-        <!-- твой код приветственного окна -->
+        <div class="modal-content intro-content">
+            <div class="intro-header">
+                <span class="intro-stamp">СОВЕРШЕННО СЕКРЕТНО</span>
+                <h2>ЛИЧНОЕ ДЕЛО ИНЖЕНЕРА</h2>
+                <div class="intro-photo"><div class="photo-real"><img src="engineer.png" alt="Инженер Polymeria" class="engineer-photo"><div class="photo-stamp">ДОПУЩЕН</div></div></div>
+            </div>
+            <div class="intro-text">
+                <p><strong>Доброго времени суток!</strong></p>
+                <p>Я — это ты. Твоя фамилия в приказе не указана, но номер бригады известен: <strong>Полимерия-1</strong>. С этого момента ты — дежурный инженер завода по добыче и очистке полимера.</p>
+                <p>Наша задача: <strong>выполнить план пятилетки досрочно</strong>. Полимер — кровь советской промышленности.</p>
+                <p>Запомни основы, товарищ:</p>
+                <ul>
+                    <li><strong>Красная кнопка</strong> — ручная добыча полимера.</li>
+                    <li><strong>Роботы-сборщики</strong> — твоя смена. Нанимай их за полимер.</li>
+                    <li><strong>Очистка</strong> — превращай отработку в полимер. 100 к 1.</li>
+                    <li><strong>Звёзды</strong> — особая валюта партии.</li>
+                    <li><strong>Коллапс</strong> — 4 раза в сутки реактор сходит с ума.</li>
+                </ul>
+                <p>Смена длится вечно, но отдых разрешён. Завод верит в тебя.</p>
+                <p class="intro-signature">С приветом,<br>ты сам.</p>
+            </div>
+            <button id="btn-start-shift" class="big-red-button" style="font-size:1.2em; padding:14px; margin: 0 16px 16px; width: calc(100% - 32px);">ПРИНЯТЬ СМЕНУ</button>
+        </div>
     </div>
 
-<!-- Нижняя панель навигации -->
     <nav class="nav-bar">
-        <button class="nav-btn" data-tab="tasks">
-            <span class="nav-icon">&#9679;</span>
-            <span class="nav-label">Задачи</span>
-        </button>
-        <button class="nav-btn active" data-tab="control">
-            <span class="nav-icon">&#9643;</span>
-            <span class="nav-label">Пульт</span>
-        </button>
-        <button class="nav-btn" data-tab="shop">
-            <span class="nav-icon">&#9632;</span>
-            <span class="nav-label">Магазин</span>
-        </button>
-        <button class="nav-btn" data-tab="profile">
-            <span class="nav-icon">&#9679;</span>
-            <span class="nav-label">Профиль</span>
-        </button>
+        <button class="nav-btn" data-tab="tasks"><span class="nav-icon">&#9679;</span><span class="nav-label">Задачи</span></button>
+        <button class="nav-btn active" data-tab="control"><span class="nav-icon">&#9643;</span><span class="nav-label">Пульт</span></button>
+        <button class="nav-btn" data-tab="shop"><span class="nav-icon">&#9632;</span><span class="nav-label">Магазин</span></button>
+        <button class="nav-btn" data-tab="profile"><span class="nav-icon">&#9679;</span><span class="nav-label">Профиль</span></button>
     </nav>
+</div>
 
     <script src="main.js"></script>
     <script src="collapse.js"></script>
     <script src="telegram.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.Polymeria && window.Polymeria.init) {
-                window.Polymeria.init();
-            }
-        });
-    </script>
+    <script>document.addEventListener('DOMContentLoaded', () => { if (window.Polymeria && window.Polymeria.init) window.Polymeria.init(); });</script>
 </body>
 </html>
