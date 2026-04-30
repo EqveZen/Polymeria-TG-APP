@@ -1,4 +1,4 @@
-// main.js — ядро Polymeria v0.4 (пульт управления + анимации + магазин)
+// main.js — ядро Polymeria v0.5 (пульт управления + анимации + магазин Stars)
 (function() {
     'use strict';
 
@@ -17,9 +17,6 @@
             pack500: { amount: 500,  bonus: 100,  label: '500 + 100 бонус' },
             pack1000: { amount: 1000, bonus: 200,  label: '1000 + 200 бонус' }
         };
-
-        // Хранилище ожидающих платежей
-        let pendingPayments = JSON.parse(localStorage.getItem('polymeria_pending') || '{}');
 
         // Состояние игры
         const state = {
@@ -188,10 +185,10 @@
             }
         }
 
-        // Платёжные функции
-        function buyStars(packKey) {
-            if (!window.Polymeria.cloudAvailable || !window.Telegram || !window.Telegram.WebApp) {
-                alert('Покупка доступна только внутри Telegram.');
+        // Прямая оплата через Telegram Stars
+        function payWithStars(packKey) {
+            if (!window.Telegram || !window.Telegram.WebApp) {
+                alert('Оплата доступна только внутри Telegram.');
                 return;
             }
 
@@ -199,23 +196,14 @@
             if (!pack) return;
 
             const tg = window.Telegram.WebApp;
-            const userId = tg.initDataUnsafe?.user?.id;
 
-            if (!userId) {
-                alert('Ошибка: не удалось получить ID пользователя.');
-                return;
-            }
-
-            const payload = `${packKey}_${Date.now()}`;
-
-            fetch(`${BOT_API}/sendInvoice`, {
+            fetch(`${BOT_API}/createInvoiceLink`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    chat_id: userId,
                     title: 'Пополнение звёзд Polymeria',
                     description: `${pack.label} звёзд`,
-                    payload: payload,
+                    payload: `${packKey}_${Date.now()}`,
                     currency: 'XTR',
                     provider_token: '',
                     prices: [{ label: pack.label, amount: pack.amount }]
@@ -223,59 +211,27 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data.ok) {
-                    pendingPayments[payload] = {
-                        packKey: packKey,
-                        amount: pack.amount,
-                        bonus: pack.bonus,
-                        time: Date.now()
-                    };
-                    localStorage.setItem('polymeria_pending', JSON.stringify(pendingPayments));
-                    alert(`Счёт на ${pack.label} звёзд отправлен!\nПосле оплаты нажмите "Проверить оплату".`);
+                if (data.ok && data.result) {
+                    tg.openInvoice(data.result, (status) => {
+                        if (status === 'paid') {
+                            state.stars += pack.amount + pack.bonus;
+                            updateUI();
+                            saveGame();
+                            updateShopTab();
+                            updateProfileTab();
+                            alert(`Оплачено! Получено ${pack.amount + pack.bonus} звёзд.`);
+                        } else if (status === 'failed') {
+                            alert('Оплата не прошла. Проверьте баланс Stars.');
+                        }
+                    });
                 } else {
-                    alert('Ошибка: ' + (data.description || 'неизвестная'));
+                    alert('Ошибка создания платежа: ' + (data.description || 'неизвестная'));
                     console.error('Invoice error:', data);
                 }
             })
             .catch(err => {
                 console.error('Fetch error:', err);
                 alert('Ошибка соединения. Попробуйте позже.');
-            });
-        }
-
-        function checkPayments() {
-            if (Object.keys(pendingPayments).length === 0) {
-                alert('Нет ожидающих платежей.');
-                return;
-            }
-
-            let found = 0;
-            const promises = Object.keys(pendingPayments).map(payload => {
-                return fetch(`${BOT_API}/getInvoice?payload=${encodeURIComponent(payload)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.ok && data.result && data.result.status === 'paid') {
-                            const payment = pendingPayments[payload];
-                            state.stars += payment.amount + payment.bonus;
-                            delete pendingPayments[payload];
-                            found++;
-                        }
-                    })
-                    .catch(() => {});
-            });
-
-            Promise.all(promises).then(() => {
-                localStorage.setItem('polymeria_pending', JSON.stringify(pendingPayments));
-                updateUI();
-                saveGame();
-                updateShopTab();
-                updateProfileTab();
-
-                if (found > 0) {
-                    alert(`Оплачено! Получено ${found} пакетов звёзд.`);
-                } else {
-                    alert('Оплаченных счетов не найдено. Нажмите "Проверить оплату" после оплаты счёта в чате с ботом.');
-                }
             });
         }
 
@@ -501,15 +457,9 @@
             
             shopGoldBtns.forEach((btn, index) => {
                 if (packKeys[index]) {
-                    btn.addEventListener('click', () => buyStars(packKeys[index]));
+                    btn.addEventListener('click', () => payWithStars(packKeys[index]));
                 }
             });
-
-            // Кнопка проверки оплаты
-            const btnCheckPayment = document.getElementById('btn-check-payment');
-            if (btnCheckPayment) {
-                btnCheckPayment.addEventListener('click', checkPayments);
-            }
         }
 
         // Экспорт
