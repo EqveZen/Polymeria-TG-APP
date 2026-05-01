@@ -96,7 +96,7 @@
                 if (buyBtn) buyBtn.classList.add('hidden');
                 if (claimBtn) claimBtn.classList.add('hidden');
             } else if (status === 'active') {
-                badge.textContent = 'АКТИВЕН';
+                badge.textContent = 'ДОСТУП ОТКРЫТ';
                 badge.className = 'pass-status-badge active';
                 const left = PASS_END - now;
                 const d = Math.floor(left / 86400000);
