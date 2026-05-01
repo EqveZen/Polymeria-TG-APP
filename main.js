@@ -658,22 +658,55 @@
             }
         }
 
-        function init() {
+function init() {
             showLoading();
-            setProgress(10);
+            setProgress(5);
+            updateLoadingText('Подключение к заводу...');
 
+            // Сначала грузим все данные
             Promise.all([
-                fetch('tasks.json?v=' + Date.now()).then(r => r.json()).then(d => { tasksData = d; setProgress(40); }),
-                fetch('promocodes.json?v=' + Date.now()).then(r => r.json()).then(d => { promoCodes = d; setProgress(60); }),
-                loadGame().then(() => setProgress(80)),
-                new Promise(r => setTimeout(r, 500))
+                fetch('tasks.json?v=' + Date.now())
+                    .then(r => r.json())
+                    .then(d => { tasksData = d; })
+                    .catch(e => console.error('Tasks load error:', e)),
+                fetch('promocodes.json?v=' + Date.now())
+                    .then(r => r.json())
+                    .then(d => { promoCodes = d; })
+                    .catch(e => console.error('Promocodes load error:', e)),
+                loadGame()
             ])
             .then(() => {
-                initTasks();
-                setProgress(90);
-                startGame();
-                setProgress(100);
-                hideLoading();
+                setProgress(25);
+                updateLoadingText('Запуск реактора...');
+
+                // Этапы загрузки (только анимация)
+                const steps = [
+                    { pct: 40, delay: 400, text: 'Калибровка приборов...' },
+                    { pct: 55, delay: 400, text: 'Загрузка задач партии...' },
+                    { pct: 70, delay: 400, text: 'Подключение роботов...' },
+                    { pct: 85, delay: 400, text: 'Проверка полимера...' },
+                    { pct: 95, delay: 300, text: 'Готово' }
+                ];
+
+                let i = 0;
+                function runSteps() {
+                    if (i >= steps.length) {
+                        setProgress(100);
+                        updateLoadingText('Завод запущен');
+                        setTimeout(() => {
+                            initTasks();
+                            startGame();
+                            hideLoading();
+                        }, 300);
+                        return;
+                    }
+                    const step = steps[i];
+                    setProgress(step.pct);
+                    updateLoadingText(step.text);
+                    i++;
+                    setTimeout(runSteps, step.delay);
+                }
+                runSteps();
             })
             .catch(e => {
                 console.error('Init error:', e);
@@ -682,6 +715,11 @@
                     hideLoading();
                 });
             });
+        }
+
+        function updateLoadingText(text) {
+            const el = document.querySelector('.loading-content p');
+            if (el) el.textContent = text;
         }
 
         window.Polymeria.state=state; window.Polymeria.init=init; window.Polymeria.updateUI=updateUI;
