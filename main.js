@@ -322,7 +322,14 @@
                     const r = task.reward;
                     if (r.type === 'stars') state.stars += r.amount;
                     updateUI(); updateTasksUI(); saveGame();
-                    if (task.target && task.target.startsWith('@')) window.open(`https://t.me/${task.target.replace('@','')}`, '_blank');
+                    if (task.target && task.target.startsWith('@')) {
+                        const url = `https://t.me/${task.target.replace('@','')}`;
+                        if (window.Telegram && window.Telegram.WebApp) {
+                            window.Telegram.WebApp.openLink(url);
+                        } else {
+                            window.open(url, '_blank');
+                        }
+                    }
                     return;
                 }
             }
