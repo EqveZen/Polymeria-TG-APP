@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Polymeria — Завод</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 </head>
 <body>
 
@@ -19,10 +22,6 @@
         <button onclick="location.reload()" style="margin-top:12px;padding:10px 24px;background:#2a0000;border:1px solid #cc0000;border-radius:4px;color:#cc0000;font-family:monospace;font-size:0.7em;">ПЕРЕЗАГРУЗИТЬ</button>
     </div>
 </div>
-
-<style>
-@keyframes spin { to { transform: rotate(360deg); } }
-</style>
 
 <div id="app">
     <div id="tab-control" class="tab-content active">
@@ -85,6 +84,7 @@
 
     </div>
 
+    <!-- ЗАДАЧИ -->
     <div id="tab-tasks" class="tab-content hidden">
         <div class="panel tasks-panel">
             <h2>СТАХАНОВСКИЙ БИЛЕТ</h2>
@@ -101,29 +101,21 @@
                 <button class="pass-claim-btn hidden" id="btn-claim-pass">ЗАБРАТЬ НАГРАДУ</button>
             </div>
 
-            <div class="task-block" id="pass-tasks-block">
-                <h3>Задачи Pass (5 в день)</h3>
-                <div id="pass-tasks-list"></div>
-            </div>
-            <div class="task-block" id="daily-tasks-block">
-                <h3>Ежедневные задания (5 в день)</h3>
-                <div id="daily-tasks-list"></div>
-            </div>
-            <div class="task-block" id="social-tasks-block">
-                <h3>Социальные задачи</h3>
-                <div id="social-tasks-list"></div>
-            </div>
+            <div class="task-block" id="pass-tasks-block"><h3>Задачи Pass (5 в день)</h3><div id="pass-tasks-list"></div></div>
+            <div class="task-block" id="daily-tasks-block"><h3>Ежедневные задания (5 в день)</h3><div id="daily-tasks-list"></div></div>
+            <div class="task-block" id="social-tasks-block"><h3>Социальные задачи</h3><div id="social-tasks-list"></div></div>
             <div class="task-block" id="investor-tasks-block">
                 <h3>Задачи Инвестора</h3>
                 <div id="investor-tasks-list"></div>
                 <div class="investor-placeholder">
-                    <img src="images/investor.png" alt="Инвестору" onerror="this.style.display='none'">
+                    <img src="investor.png" alt="Инвестору" onerror="this.style.display='none'">
                     <p>Этому заводу нужен инвестор</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- МАГАЗИН -->
     <div id="tab-shop" class="tab-content hidden">
         <div class="panel shop-panel">
             <h2>МАГАЗИН</h2>
@@ -148,10 +140,11 @@
         </div>
     </div>
 
+    <!-- ПРОФИЛЬ -->
     <div id="tab-profile" class="tab-content hidden">
         <div class="panel profile-panel">
             <div class="profile-header">
-                <div class="profile-photo" id="profile-photo-container"><img src="images/engineer.png" alt="Инженер" id="profile-photo-img"></div>
+                <div class="profile-photo" id="profile-photo-container"><img src="engineer.png" alt="Инженер" id="profile-photo-img"></div>
                 <div class="profile-name" id="profile-name">Инженер Полимерия-1</div>
                 <div class="profile-rank">Дежурный 3-й смены</div>
             </div>
@@ -177,15 +170,15 @@
             <div class="intro-header">
                 <span class="intro-stamp">СОВЕРШЕННО СЕКРЕТНО</span>
                 <h2>ЛИЧНОЕ ДЕЛО ИНЖЕНЕРА</h2>
-                <div class="intro-photo"><div class="photo-real"><img src="images/engineer.png" alt="Инженер Polymeria" class="engineer-photo"><div class="photo-stamp">ДОПУЩЕН</div></div></div>
+                <div class="intro-photo"><div class="photo-real"><img src="engineer.png" alt="Инженер Polymeria" class="engineer-photo"><div class="photo-stamp">ДОПУЩЕН</div></div></div>
             </div>
             <div class="intro-text">
                 <p><strong>Доброго времени суток!</strong></p>
-                <p>Я — это ты. Твоя фамилия в приказе не указана, но номер бригады известен: <strong>Полимерия-1</strong>.</p>
+                <p>Я — это ты. Номер бригады: <strong>Полимерия-1</strong>.</p>
                 <p>Наша задача: <strong>выполнить план пятилетки досрочно</strong>.</p>
                 <ul>
                     <li><strong>Красная кнопка</strong> — ручная добыча.</li>
-                    <li><strong>Роботы-сборщики</strong> — твоя смена.</li>
+                    <li><strong>Роботы</strong> — твоя смена.</li>
                     <li><strong>Очистка</strong> — 100 отработки + 10 энергии → 1 полимер.</li>
                     <li><strong>Коллапс</strong> — 4 раза в сутки.</li>
                 </ul>
@@ -203,12 +196,26 @@
     </nav>
 </div>
 
-<script src="main.js"></script>
+<script src="js/loading.js"></script>
+<script src="js/save.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/resources.js"></script>
+<script src="js/pass.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/promo.js"></script>
+<script src="js/bonus.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/intro.js"></script>
+<script src="js/core.js"></script>
 <script src="collapse.js"></script>
 <script src="telegram.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        if (window.Polymeria && window.Polymeria.init) window.Polymeria.init();
+        // Ждём загрузки всех модулей
+        setTimeout(() => {
+            if (window.Polymeria && window.Polymeria.init) window.Polymeria.init();
+        }, 200);
     });
 </script>
 </body>
