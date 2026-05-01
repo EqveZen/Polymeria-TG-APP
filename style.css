@@ -272,3 +272,44 @@ body::after { content: ""; position: fixed; bottom: -120px; left: -60px; width: 
 .pass-timer.urgent {
     color: #ff4444;
 }
+
+/* Промокоды */
+.promo-box {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.promo-input {
+    flex: 1;
+    padding: 10px;
+    background: #111;
+    border: 1px solid #555;
+    border-radius: 4px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.promo-input::placeholder {
+    color: #555;
+    text-transform: none;
+    letter-spacing: 0;
+}
+.promo-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(0,255,204,0.2);
+}
+#promo-result {
+    margin-top: 8px;
+    font-size: 0.7em;
+    text-align: center;
+    min-height: 18px;
+}
+.promo-result-success {
+    color: var(--accent);
+}
+.promo-result-error {
+    color: var(--danger);
+}
