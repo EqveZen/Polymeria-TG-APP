@@ -6,7 +6,63 @@ window.Polymeria = window.Polymeria || {};
     const P = window.Polymeria;
 
     P.Tasks = {
+        P.Tasks = {
         data: { dailyTasks: [], passTasks: [], socialTasks: [], investorTasks: [] },
+
+        // Встроенные данные (без fetch)
+        defaultData: {
+            dailyTasks: [
+                { "id": "D1", "type": "harvest", "desc": "Добыть {target} отработки", "reward": { "type": "polymer", "amount": 200 } },
+                { "id": "D2", "type": "buy_robots", "desc": "Нанять {target} роботов", "reward": { "type": "purified", "amount": 3 } },
+                { "id": "D3", "type": "watch_ad", "desc": "Посмотреть рекламу", "reward": { "type": "energy", "amount": 10 } },
+                { "id": "D4", "type": "playtime", "desc": "Провести {target} мин в игре", "reward": { "type": "purified", "amount": 2 } },
+                { "id": "D5", "type": "convert", "desc": "Конвертировать {target} полимера", "reward": { "type": "purified", "amount": 3 } },
+                { "id": "D6", "type": "survive_collapse", "desc": "Пережить 1 коллапс", "reward": { "type": "energy", "amount": 20 } },
+                { "id": "D7", "type": "clicks", "desc": "Нажать кнопку {target} раз", "reward": { "type": "polymer", "amount": 300 } },
+                { "id": "D8", "type": "accumulate", "desc": "Накопить {target} отработки", "reward": { "type": "purified", "amount": 2 } },
+                { "id": "D9", "type": "shop_buy", "desc": "Купить 1 улучшение", "reward": { "type": "polymer", "amount": 500 } },
+                { "id": "D10", "type": "spend_energy", "desc": "Потратить {target} энергии", "reward": { "type": "polymer", "amount": 400 } },
+                { "id": "D11", "type": "harvest_precise", "desc": "Добыть {target} отработки (±10%)", "reward": { "type": "polymer", "amount": 300 } },
+                { "id": "D12", "type": "buy_robots_consecutive", "desc": "Нанять 3 роботов подряд", "reward": { "type": "purified", "amount": 2 } },
+                { "id": "D13", "type": "watch_ad_x2", "desc": "Посмотреть 2 рекламы", "reward": { "type": "energy", "amount": 15 } },
+                { "id": "D14", "type": "playtime_long", "desc": "Провести {target} мин в игре", "reward": { "type": "purified", "amount": 3 } },
+                { "id": "D15", "type": "convert", "desc": "Конвертировать {target} полимера", "reward": { "type": "purified", "amount": 2 } },
+                { "id": "D16", "type": "survive_collapse_risk", "desc": "Пережить коллапс (Риск)", "reward": { "type": "energy", "amount": 25 } },
+                { "id": "D17", "type": "clicks", "desc": "Нажать кнопку {target} раз", "reward": { "type": "polymer", "amount": 350 } },
+                { "id": "D18", "type": "buy_consecutive", "desc": "Нанять 5 роботов подряд", "reward": { "type": "purified", "amount": 4 } },
+                { "id": "D19", "type": "shop_buy_x2", "desc": "Купить 2 улучшения", "reward": { "type": "polymer", "amount": 600 } },
+                { "id": "D20", "type": "spend_energy_session", "desc": "Потратить {target} энергии за сессию", "reward": { "type": "polymer", "amount": 450 } }
+            ],
+            passTasks: [
+                { "id": "P1", "type": "harvest", "desc": "Добыть {target} отработки", "reward": { "type": "tickets", "amount": 20 } },
+                { "id": "P2", "type": "buy_robots", "desc": "Нанять {target} роботов", "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P3", "type": "survive_collapse", "desc": "Пережить 1 коллапс", "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P4", "type": "playtime", "desc": "Провести {target} мин в игре", "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P5", "type": "spend_energy", "desc": "Потратить {target} энергии", "reward": { "type": "tickets", "amount": 20 } },
+                { "id": "P6", "type": "convert", "desc": "Конвертировать {target} полимера", "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P7", "type": "clicks", "desc": "Нажать кнопку {target} раз", "reward": { "type": "tickets", "amount": 15 } },
+                { "id": "P8", "type": "accumulate", "desc": "Накопить {target} отработки", "reward": { "type": "tickets", "amount": 20 } },
+                { "id": "P9", "type": "shop_buy", "desc": "Купить 1 улучшение", "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P10", "type": "buy_multiple", "desc": "Нанять 10 роботов", "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P11", "type": "survive_collapse_x2", "desc": "Пережить 2 коллапса", "reward": { "type": "tickets", "amount": 35 } },
+                { "id": "P12", "type": "playtime_long", "desc": "Провести {target} мин в игре", "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P13", "type": "convert_mass", "desc": "Конвертировать 500 отработки в полимер", "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P14", "type": "accumulate_long", "desc": "Накопить {target} отработки (30 мин без трат)", "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P15", "type": "clicks", "desc": "Нажать кнопку {target} раз", "reward": { "type": "tickets", "amount": 20 } },
+                { "id": "P16", "type": "harvest_large", "desc": "Добыть {target} отработки", "reward": { "type": "tickets", "amount": 20 } },
+                { "id": "P17", "type": "buy_robots_large", "desc": "Нанять 15 роботов", "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P18", "type": "shop_buy_x2", "desc": "Купить 2 улучшения", "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P19", "type": "spend_energy_large", "desc": "Потратить {target} энергии", "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P20", "type": "convert_precise", "desc": "Конвертировать {target} полимера", "reward": { "type": "tickets", "amount": 25 } }
+            ],
+            socialTasks: [
+                { "id": "S1", "type": "subscribe_channel", "desc": "Подписаться на канал проекта", "target": "@news_divan_roman", "reward": { "type": "stars", "amount": 1 } },
+                { "id": "S2", "type": "join_chat", "desc": "Вступить в чат партии", "target": "@PolymeriaChat", "reward": { "type": "stars", "amount": 1 } }
+            ],
+            investorTasks: [
+                { "id": "I1", "type": "subscribe_channel", "desc": "Подписаться на канал спонсора", "target": "@news_divan_roman", "reward": { "type": "stars", "amount": 1 } }
+            ]
+        },
 
         init: function() {
             if (!P.Tasks.data.dailyTasks.length) return;
