@@ -1,4 +1,4 @@
-// main.js — Polymeria v0.8 (защита от сброса + экран загрузки + таймаут)
+// main.js — Polymeria v0.9
 (function() {
     'use strict';
     try {
@@ -66,70 +66,39 @@
             const rewardBlock = document.getElementById('pass-reward-block');
             const buyBtn = document.getElementById('btn-buy-pass');
             const claimBtn = document.getElementById('btn-claim-pass');
-
             if (!badge || !timer) return;
 
             if (status === 'soon') {
-                badge.textContent = 'СКОРО';
-                badge.className = 'pass-status-badge soon';
+                badge.textContent = 'СКОРО'; badge.className = 'pass-status-badge soon';
                 const left = PASS_START - now;
-                const d = Math.floor(left / 86400000);
-                const h = Math.floor((left % 86400000) / 3600000);
-                const m = Math.floor((left % 3600000) / 60000);
-                timer.textContent = `Сезон 1 начнётся через ${d}д ${h}ч ${m}м`;
+                timer.textContent = `Сезон 1 начнётся через ${Math.floor(left/86400000)}д ${Math.floor((left%86400000)/3600000)}ч`;
                 timer.className = 'pass-timer';
-                if (levelBlock) levelBlock.classList.add('hidden');
-                if (progressBlock) progressBlock.classList.add('hidden');
-                if (ticketsBlock) ticketsBlock.classList.add('hidden');
-                if (rewardBlock) rewardBlock.classList.add('hidden');
-                if (buyBtn) buyBtn.classList.add('hidden');
-                if (claimBtn) claimBtn.classList.add('hidden');
+                [levelBlock, progressBlock, ticketsBlock, rewardBlock, buyBtn, claimBtn].forEach(e => { if(e) e.classList.add('hidden'); });
             } else if (status === 'active') {
-                badge.textContent = 'ДОСТУП ОТКРЫТ';
-                badge.className = 'pass-status-badge active';
+                badge.textContent = 'ДОСТУП ОТКРЫТ'; badge.className = 'pass-status-badge active';
                 const left = PASS_END - now;
-                const d = Math.floor(left / 86400000);
-                const h = Math.floor((left % 86400000) / 3600000);
-                timer.textContent = `До конца сезона: ${d}д ${h}ч`;
-                timer.className = 'pass-timer';
-                if (levelBlock) levelBlock.classList.remove('hidden');
-                if (progressBlock) progressBlock.classList.remove('hidden');
-                if (ticketsBlock) ticketsBlock.classList.remove('hidden');
-                if (rewardBlock) rewardBlock.classList.remove('hidden');
-                if (state.passOwned) {
-                    if (buyBtn) buyBtn.classList.add('hidden');
-                } else {
-                    if (buyBtn) buyBtn.classList.remove('hidden');
-                }
+                timer.textContent = `До конца сезона: ${Math.floor(left/86400000)}д ${Math.floor((left%86400000)/3600000)}ч`;
+                [levelBlock, progressBlock, ticketsBlock, rewardBlock].forEach(e => { if(e) e.classList.remove('hidden'); });
+                if (state.passOwned) { if(buyBtn) buyBtn.classList.add('hidden'); }
+                else { if(buyBtn) buyBtn.classList.remove('hidden'); }
+                if(claimBtn) claimBtn.classList.add('hidden');
                 updateTasksUI();
             } else {
-                badge.textContent = 'ЗАВЕРШЁН';
-                badge.className = 'pass-status-badge ended';
-                timer.textContent = 'Сезон 1 окончен. Ждите Сезон 2.';
-                timer.className = 'pass-timer';
-                if (levelBlock) levelBlock.classList.add('hidden');
-                if (progressBlock) progressBlock.classList.add('hidden');
-                if (ticketsBlock) ticketsBlock.classList.add('hidden');
-                if (rewardBlock) rewardBlock.classList.add('hidden');
-                if (buyBtn) buyBtn.classList.add('hidden');
-                if (claimBtn) claimBtn.classList.add('hidden');
+                badge.textContent = 'ЗАВЕРШЁН'; badge.className = 'pass-status-badge ended';
+                timer.textContent = 'Сезон 1 окончен.';
+                [levelBlock, progressBlock, ticketsBlock, rewardBlock, buyBtn, claimBtn].forEach(e => { if(e) e.classList.add('hidden'); });
             }
         }
 
         function getTarget(type) {
             const inc = state.incomePerSec || 0.1;
             switch(type) {
-                case 'harvest': case 'harvest_large': case 'harvest_precise':
-                    return Math.floor(500 + inc * 300);
-                case 'buy_robots': case 'buy_robots_large':
-                    return Math.max(1, Math.floor(3 + inc * 0.5));
-                case 'convert': case 'convert_precise': case 'convert_mass':
-                    return Math.max(1, Math.floor(5 + inc * 0.1));
-                case 'spend_energy': case 'spend_energy_large': case 'spend_energy_session':
-                    return Math.floor(30 + inc * 2);
+                case 'harvest': case 'harvest_large': case 'harvest_precise': return Math.floor(500 + inc * 300);
+                case 'buy_robots': case 'buy_robots_large': return Math.max(1, Math.floor(3 + inc * 0.5));
+                case 'convert': case 'convert_precise': case 'convert_mass': return Math.max(1, Math.floor(5 + inc * 0.1));
+                case 'spend_energy': case 'spend_energy_large': case 'spend_energy_session': return Math.floor(30 + inc * 2);
                 case 'clicks': return Math.floor(50 + inc * 10);
-                case 'accumulate': case 'accumulate_long':
-                    return Math.floor(500 + inc * 200);
+                case 'accumulate': case 'accumulate_long': return Math.floor(500 + inc * 200);
                 default: return 1;
             }
         }
@@ -143,50 +112,32 @@
                 state.dailyTaskDate = today; state.passTaskDate = today;
                 state.completedDaily = []; state.completedPass = [];
                 state.dailyPolymerEarned = 0; state.clicksToday = 0;
-                state.robotsBoughtConsecutive = 0;
-                state.energySpentSession = 0;
-                state.dailyPurifiedConverted = 0;
-                state.playtimeSession = 0;
+                state.robotsBoughtConsecutive = 0; state.energySpentSession = 0;
+                state.dailyPurifiedConverted = 0; state.playtimeSession = 0;
                 state.sessionStart = Date.now();
                 saveGame();
             }
             updateTasksUI();
         }
 
-        function shuffle(a) {
-            const b = [...a];
-            for (let i = b.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [b[i], b[j]] = [b[j], b[i]];
-            }
-            return b;
-        }
+        function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
 
         function getTaskProgress(task) {
             switch(task.type) {
-                case 'harvest': case 'harvest_large': case 'harvest_precise':
-                case 'accumulate': case 'accumulate_long':
-                    return state.dailyPolymerEarned;
-                case 'buy_robots': case 'buy_robots_large': case 'buy_multiple':
-                    return state.robots;
-                case 'buy_robots_consecutive': case 'buy_consecutive':
-                    return state.robotsBoughtConsecutive;
-                case 'convert': case 'convert_precise': case 'convert_mass':
-                    return state.dailyPurifiedConverted;
-                case 'spend_energy': case 'spend_energy_large':
-                    return Math.max(0, 100 - state.energy);
-                case 'spend_energy_session':
-                    return state.energySpentSession;
+                case 'harvest': case 'harvest_large': case 'harvest_precise': case 'accumulate': case 'accumulate_long': return state.dailyPolymerEarned;
+                case 'buy_robots': case 'buy_robots_large': case 'buy_multiple': return state.robots;
+                case 'buy_robots_consecutive': case 'buy_consecutive': return state.robotsBoughtConsecutive;
+                case 'convert': case 'convert_precise': case 'convert_mass': return state.dailyPurifiedConverted;
+                case 'spend_energy': case 'spend_energy_large': return Math.max(0, 100 - state.energy);
+                case 'spend_energy_session': return state.energySpentSession;
                 case 'clicks': return state.clicksToday;
-                case 'playtime': case 'playtime_long':
-                    return Math.floor((Date.now() - state.sessionStart) / 60000);
+                case 'playtime': case 'playtime_long': return Math.floor((Date.now() - state.sessionStart) / 60000);
                 default: return 0;
             }
         }
 
         function isTaskComplete(task) {
-            const prog = getTaskProgress(task);
-            let t = 1;
+            const prog = getTaskProgress(task); let t = 1;
             if (task.type.includes('harvest') || task.type.includes('accumulate')) t = getTarget(task.type);
             else if (task.type === 'buy_robots') t = getTarget('buy_robots');
             else if (task.type === 'buy_robots_large') t = 15;
@@ -199,12 +150,8 @@
             else if (task.type === 'clicks') t = getTarget('clicks');
             else if (task.type === 'playtime') t = 15;
             else if (task.type === 'playtime_long') t = 30;
-            else if (task.type === 'survive_collapse_risk') t = 1;
-            else if (task.type === 'survive_collapse_x2') t = 2;
-            else if (task.type === 'watch_ad') t = 1;
-            else if (task.type === 'watch_ad_x2') t = 2;
-            else if (task.type === 'shop_buy') t = 1;
-            else if (task.type === 'shop_buy_x2') t = 2;
+            else if (task.type === 'survive_collapse_risk' || task.type === 'watch_ad' || task.type === 'shop_buy') t = 1;
+            else if (task.type === 'survive_collapse_x2' || task.type === 'watch_ad_x2' || task.type === 'shop_buy_x2') t = 2;
             return prog >= t;
         }
 
@@ -214,49 +161,24 @@
             renderTaskList('social-tasks-list', tasksData.socialTasks || [], 'social', false);
             renderTaskList('investor-tasks-list', tasksData.investorTasks || [], 'investor', false);
 
-            const passLevelEl = document.getElementById('pass-level');
-            const passTicketsEl = document.getElementById('pass-tickets');
-            const passFillEl = document.getElementById('pass-fill');
-            const passRewardText = document.getElementById('pass-reward-text');
-            if (passLevelEl) passLevelEl.textContent = state.passLevel;
-            if (passTicketsEl) passTicketsEl.textContent = state.passTickets;
-            if (passFillEl) passFillEl.style.width = Math.min(100, (state.passTickets / 100) * 100) + '%';
-
-            const passRewards = [
-                '', '100 отработки','100 отработки','100 отработки','100 отработки','100 отработки',
-                '100 отработки','100 отработки','100 отработки','100 отработки','+2 робота',
-                '150 отработки','150 отработки','150 отработки','150 отработки','150 отработки',
-                '150 отработки','150 отработки','150 отработки','150 отработки','+5 полимера +1 звезда',
-                '200 отработки','200 отработки','200 отработки','200 отработки','200 отработки',
-                '200 отработки','200 отработки','200 отработки','200 отработки','+3 робота',
-                '250 отработки','250 отработки','250 отработки','250 отработки','250 отработки',
-                '250 отработки','250 отработки','250 отработки','250 отработки','+10 полимера +2 звезды',
-                '300 отработки','300 отработки','300 отработки','300 отработки','300 отработки',
-                '300 отработки','300 отработки','300 отработки','300 отработки','+5 роботов',
-                '350 отработки','350 отработки','350 отработки','350 отработки','350 отработки',
-                '350 отработки','350 отработки','350 отработки','350 отработки','+15 полимера +3 звезды',
-                '400 отработки','400 отработки','400 отработки','400 отработки','400 отработки',
-                '400 отработки','400 отработки','400 отработки','400 отработки','+10 роботов',
-                '500 отработки','500 отработки','500 отработки','500 отработки','500 отработки',
-                '500 отработки','500 отработки','500 отработки','500 отработки','+20 полимера +5 звёзд',
-                '600 отработки','600 отработки','600 отработки','600 отработки','600 отработки',
-                '600 отработки','600 отработки','600 отработки','600 отработки','+25 роботов',
-                '1000 отработки','1000 отработки','1000 отработки','1000 отработки','1000 отработки',
-                '1000 отработки','1000 отработки','1000 отработки','1000 отработки',
-                'Скин «Золотой пульт» +10 звёзд'
-            ];
-            if (passRewardText) passRewardText.textContent = passRewards[state.passLevel] || '—';
+            const pl = document.getElementById('pass-level'), pt = document.getElementById('pass-tickets');
+            const pf = document.getElementById('pass-fill'), prt = document.getElementById('pass-reward-text');
+            if(pl) pl.textContent = state.passLevel;
+            if(pt) pt.textContent = state.passTickets;
+            if(pf) pf.style.width = Math.min(100, (state.passTickets / 100) * 100) + '%';
+            const passRewards = ['','100 отработки','100 отработки','100 отработки','100 отработки','100 отработки','100 отработки','100 отработки','100 отработки','100 отработки','+2 робота','150 отработки','150 отработки','150 отработки','150 отработки','150 отработки','150 отработки','150 отработки','150 отработки','150 отработки','+5 полимера +1 звезда','200 отработки','200 отработки','200 отработки','200 отработки','200 отработки','200 отработки','200 отработки','200 отработки','200 отработки','+3 робота','250 отработки','250 отработки','250 отработки','250 отработки','250 отработки','250 отработки','250 отработки','250 отработки','250 отработки','+10 полимера +2 звезды','300 отработки','300 отработки','300 отработки','300 отработки','300 отработки','300 отработки','300 отработки','300 отработки','300 отработки','+5 роботов','350 отработки','350 отработки','350 отработки','350 отработки','350 отработки','350 отработки','350 отработки','350 отработки','350 отработки','+15 полимера +3 звезды','400 отработки','400 отработки','400 отработки','400 отработки','400 отработки','400 отработки','400 отработки','400 отработки','400 отработки','+10 роботов','500 отработки','500 отработки','500 отработки','500 отработки','500 отработки','500 отработки','500 отработки','500 отработки','500 отработки','+20 полимера +5 звёзд','600 отработки','600 отработки','600 отработки','600 отработки','600 отработки','600 отработки','600 отработки','600 отработки','600 отработки','+25 роботов','1000 отработки','1000 отработки','1000 отработки','1000 отработки','1000 отработки','1000 отработки','1000 отработки','1000 отработки','1000 отработки','Скин «Золотой пульт» +10 звёзд'];
+            if(prt) prt.textContent = passRewards[state.passLevel] || '—';
 
             const buyBtn = document.getElementById('btn-buy-pass');
             const claimBtn = document.getElementById('btn-claim-pass');
             if (state.passOwned) {
-                if (buyBtn) buyBtn.classList.add('hidden');
+                if(buyBtn) buyBtn.classList.add('hidden');
                 if (state.passTickets >= 100 && state.passLevel < 100 && !state.passRewardsClaimed.includes(state.passLevel)) {
-                    if (claimBtn) claimBtn.classList.remove('hidden');
-                } else { if (claimBtn) claimBtn.classList.add('hidden'); }
+                    if(claimBtn) claimBtn.classList.remove('hidden');
+                } else { if(claimBtn) claimBtn.classList.add('hidden'); }
             } else {
-                if (buyBtn) buyBtn.classList.remove('hidden');
-                if (claimBtn) claimBtn.classList.add('hidden');
+                if(buyBtn) buyBtn.classList.remove('hidden');
+                if(claimBtn) claimBtn.classList.add('hidden');
             }
         }
 
@@ -264,12 +186,10 @@
             const container = document.getElementById(containerId);
             if (!container || !tasks.length) return;
             let html = '';
-            const completed = type === 'pass' ? state.completedPass : type === 'daily' ? state.completedDaily :
-                             type === 'social' ? state.completedSocial : state.completedInvestor;
+            const completed = type === 'pass' ? state.completedPass : type === 'daily' ? state.completedDaily : type === 'social' ? state.completedSocial : state.completedInvestor;
             tasks.forEach(task => {
                 const done = completed.includes(task.id);
-                const prog = getTaskProgress(task);
-                let t = 1;
+                const prog = getTaskProgress(task); let t = 1;
                 if (task.type.includes('harvest') || task.type.includes('accumulate')) t = getTarget(task.type);
                 else if (task.type === 'buy_robots') t = getTarget('buy_robots');
                 else if (task.type === 'buy_robots_large') t = 15;
@@ -282,19 +202,10 @@
                 else if (task.type === 'clicks') t = getTarget('clicks');
                 else if (task.type === 'playtime') t = 15;
                 else if (task.type === 'playtime_long') t = 30;
-                else if (task.type === 'survive_collapse_risk') t = 1;
-                else if (task.type === 'survive_collapse_x2') t = 2;
-                else if (task.type === 'watch_ad') t = 1;
-                else if (task.type === 'watch_ad_x2') t = 2;
-                else if (task.type === 'shop_buy') t = 1;
-                else if (task.type === 'shop_buy_x2') t = 2;
+                else t = 1;
                 const pt = Math.min(prog, t) + '/' + t;
                 html += `<div class="task-item ${dim ? 'dim' : ''}">
-                    <div class="task-item-info">
-                        <span class="task-item-desc">${task.desc.replace('{target}', t)}</span>
-                        <span class="task-item-reward">Награда: ${task.reward.amount} ${task.reward.type === 'tickets' ? 'БП' : task.reward.type === 'polymer' ? 'отработки' : task.reward.type === 'purified' ? 'полимера' : task.reward.type === 'energy' ? 'энергии' : 'звёзд'}</span>
-                        <span class="task-item-progress">${pt}</span>
-                    </div>
+                    <div class="task-item-info"><span class="task-item-desc">${task.desc.replace('{target}', t)}</span><span class="task-item-reward">Награда: ${task.reward.amount} ${task.reward.type==='tickets'?'БП':task.reward.type==='polymer'?'отработки':task.reward.type==='purified'?'полимера':task.reward.type==='energy'?'энергии':'звёзд'}</span><span class="task-item-progress">${pt}</span></div>
                     ${done ? '<span class="task-done">ВЫПОЛНЕНО</span>' : `<button class="task-claim-btn" ${(dim || !isTaskComplete(task)) ? 'disabled' : ''} data-type="${type}" data-id="${task.id}">ЗАБРАТЬ</button>`}
                 </div>`;
             });
@@ -305,31 +216,22 @@
         }
 
         function claimTaskReward(type, taskId) {
-            let taskList = type === 'pass' ? state.passTasks : type === 'daily' ? state.dailyTasks :
-                           type === 'social' ? tasksData.socialTasks : tasksData.investorTasks;
-            let completed = type === 'pass' ? state.completedPass : type === 'daily' ? state.completedDaily :
-                            type === 'social' ? state.completedSocial : state.completedInvestor;
+            let taskList = type === 'pass' ? state.passTasks : type === 'daily' ? state.dailyTasks : type === 'social' ? tasksData.socialTasks : tasksData.investorTasks;
+            let completed = type === 'pass' ? state.completedPass : type === 'daily' ? state.completedDaily : type === 'social' ? state.completedSocial : state.completedInvestor;
             const task = taskList.find(t => t.id === taskId);
             if (!task || completed.includes(taskId)) return;
-
             if (type === 'social' || type === 'investor') {
-                if (task.type === 'subscribe' || task.type === 'subscribe_channel' || task.type === 'join_chat') {
-                    completed.push(taskId);
-                    const r = task.reward;
-                    if (r.type === 'stars') state.stars += r.amount;
-                    updateUI(); updateTasksUI(); saveGame();
-                    if (task.target && task.target.startsWith('@')) {
-                        const url = `https://t.me/${task.target.replace('@','')}`;
-                        if (window.Telegram && window.Telegram.WebApp) {
-                            window.Telegram.WebApp.openLink(url);
-                        } else {
-                            window.open(url, '_blank');
-                        }
-                    }
-                    return;
+                completed.push(taskId);
+                const r = task.reward;
+                if (r.type === 'stars') state.stars += r.amount;
+                updateUI(); updateTasksUI(); saveGame();
+                if (task.target && task.target.startsWith('@')) {
+                    const url = `https://t.me/${task.target.replace('@','')}`;
+                    if (window.Telegram?.WebApp) window.Telegram.WebApp.openLink(url);
+                    else window.open(url, '_blank');
                 }
+                return;
             }
-
             if (!isTaskComplete(task)) return;
             completed.push(taskId);
             const r = task.reward;
@@ -338,21 +240,14 @@
                 case 'purified': state.purified += r.amount; break;
                 case 'energy': state.energy = Math.min(100, state.energy + r.amount); break;
                 case 'stars': state.stars += r.amount; break;
-                case 'tickets':
-                    state.passTickets += r.amount;
-                    while (state.passTickets >= 100 && state.passLevel < 100) {
-                        state.passTickets -= 100;
-                        grantPassReward(state.passLevel + 1);
-                    }
-                    break;
+                case 'tickets': state.passTickets += r.amount; while (state.passTickets >= 100 && state.passLevel < 100) { state.passTickets -= 100; grantPassReward(state.passLevel + 1); } break;
             }
             updateUI(); updateTasksUI(); saveGame();
         }
 
         function grantPassReward(level) {
             if (state.passRewardsClaimed.includes(level)) return;
-            state.passRewardsClaimed.push(level);
-            state.passLevel = level;
+            state.passRewardsClaimed.push(level); state.passLevel = level;
             if (level === 10) state.robots += 2;
             else if (level === 20) { state.purified += 5; state.stars += 1; }
             else if (level === 30) state.robots += 3;
@@ -380,7 +275,6 @@
         }
 
         function pulseElement(el) { if (!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
-
         function createSparks() {
             const btn = ui.btnHarvest; if (!btn) return;
             const rect = btn.getBoundingClientRect();
@@ -394,8 +288,7 @@
         }
 
         function updateProfileTab() {
-            const ps=document.getElementById('profile-stars'), pp=document.getElementById('profile-polymer'),
-                  ppu=document.getElementById('profile-purified'), pr=document.getElementById('profile-robots');
+            const ps=document.getElementById('profile-stars'), pp=document.getElementById('profile-polymer'), ppu=document.getElementById('profile-purified'), pr=document.getElementById('profile-robots');
             if(ps) ps.textContent = Math.floor(state.stars);
             if(pp) pp.textContent = Math.floor(state.polymer);
             if(ppu) ppu.textContent = Math.floor(state.purified);
@@ -407,7 +300,6 @@
                 if(pph&&u.photo_url) { pph.src=u.photo_url; pph.style.filter='none'; }
             }
         }
-
         function updateShopTab() { const s=document.getElementById('shop-stars'); if(s) s.textContent = Math.floor(state.stars); }
 
         const BONUS_COOLDOWN = 86400000;
@@ -498,7 +390,7 @@
                 state.robotsBoughtConsecutive=(now-state.lastRobotBuyTime<5000)?state.robotsBoughtConsecutive+1:1;
                 state.lastRobotBuyTime=now; state.robotCost=Math.floor(state.robotCost*1.5); state.incomePerSec=state.robots*0.1;
                 updateUI(); saveGame();
-            } else alert('Недостаточно отработки, товарищ.');
+            } else alert('Недостаточно отработки.');
         }
 
         function convertPolymer() {
@@ -516,74 +408,40 @@
 
         function saveGame() {
             state.lastSave=Date.now();
-            try {
-                localStorage.setItem('polymeria_save', JSON.stringify(state));
-                if(window.Polymeria.saveToCloud) window.Polymeria.saveToCloud(state);
-            } catch(e) {}
+            try { localStorage.setItem('polymeria_save', JSON.stringify(state)); if(window.Polymeria.saveToCloud) window.Polymeria.saveToCloud(state); } catch(e) {}
         }
 
         async function loadGame() {
             let localData = null;
-            try {
-                const saved = localStorage.getItem('polymeria_save');
-                if (saved) localData = JSON.parse(saved);
-            } catch(e) {}
-
+            try { const saved = localStorage.getItem('polymeria_save'); if (saved) localData = JSON.parse(saved); } catch(e) {}
             if (window.Polymeria.loadFromCloud) {
                 try {
                     const cloudData = await window.Polymeria.loadFromCloud();
                     if (cloudData) {
-                        const cloudTime = cloudData.lastSave || 0;
-                        const localTime = localData?.lastSave || 0;
-                        if (cloudTime > localTime) {
+                        if ((cloudData.lastSave || 0) > (localData?.lastSave || 0)) {
                             Object.assign(state, defaults, cloudData);
                             localStorage.setItem('polymeria_save', JSON.stringify(state));
-                        } else if (localData) {
-                            Object.assign(state, defaults, localData);
-                        }
-                    } else if (localData) {
-                        Object.assign(state, defaults, localData);
-                    }
-                } catch(e) {
-                    if (localData) Object.assign(state, defaults, localData);
-                }
-            } else if (localData) {
-                Object.assign(state, defaults, localData);
-            }
-
+                        } else if (localData) Object.assign(state, defaults, localData);
+                    } else if (localData) Object.assign(state, defaults, localData);
+                } catch(e) { if (localData) Object.assign(state, defaults, localData); }
+            } else if (localData) Object.assign(state, defaults, localData);
             state.sessionStart = Date.now();
             updateUI();
         }
 
-        function showLoading() {
-            const screen = document.getElementById('loading-screen');
-            const errorBlock = document.getElementById('loading-error');
-            const gear = document.querySelector('.loading-gear');
-            const loadingBar = document.querySelector('.loading-bar');
-            const loadingText = document.querySelector('.loading-content p');
-
-            if (screen) screen.classList.remove('hidden');
-            if (errorBlock) errorBlock.classList.add('hidden');
-            if (gear) gear.style.display = '';
-            if (loadingBar) loadingBar.style.display = '';
-            if (loadingText) loadingText.style.display = '';
-            setProgress(0);
-        }
-
         function hideLoading() {
             const screen = document.getElementById('loading-screen');
-            if (screen) {
-                screen.classList.add('hidden');
-            }
+            if (screen) screen.style.display = 'none';
         }
 
-        function setProgress(pct) {
-            const fill = document.getElementById('loading-fill');
-            if (fill) fill.style.width = pct + '%';
+        function showError() {
+            document.getElementById('loading-gear').style.display = 'none';
+            document.getElementById('loading-text').style.display = 'none';
+            document.getElementById('loading-error').style.display = 'block';
         }
 
-        function updateLoadingText(text) {
-            const el = document.querySelector('.loading-content p');
+        function setLoadingText(text) {
+            const el = document.getElementById('loading-text');
             if (el) el.textContent = text;
         }
 
@@ -596,7 +454,6 @@
             ui.btnBuyRobot.addEventListener('click', buyRobot);
             ui.btnConvert.addEventListener('click', convertPolymer);
             updateUI();
-
             document.getElementById('tab-control')?.classList.add('active');
             document.getElementById('tab-control')?.classList.remove('hidden');
 
@@ -640,20 +497,15 @@
 
             document.getElementById('btn-buy-pass')?.addEventListener('click',()=>{
                 const status = getPassStatus();
-                if (status === 'soon') { alert('Стахановский билет ещё не доступен. Сезон 1 начнётся 1 мая.'); return; }
-                if (status === 'ended') { alert('Сезон 1 завершён. Ждите Сезон 2.'); return; }
-                if (state.passOwned) { alert('У вас уже есть Стахановский билет!'); return; }
+                if (status === 'soon') { alert('Сезон 1 ещё не начался.'); return; }
+                if (status === 'ended') { alert('Сезон 1 завершён.'); return; }
+                if (state.passOwned) { alert('Билет уже куплен!'); return; }
                 if (state.stars >= 150) {
                     state.stars -= 150;
                     state.passOwned = true;
-                    updateUI();
-                    updateTasksUI();
-                    updatePassTimer();
-                    saveGame();
-                    alert('Стахановский билет куплен! Выполняйте задания Pass.');
-                } else {
-                    alert('Недостаточно звёзд. Нужно 150. Заработайте звёзды или используйте промокод STARS150.');
-                }
+                    updateUI(); updateTasksUI(); updatePassTimer(); saveGame();
+                    alert('Стахановский билет куплен!');
+                } else alert('Недостаточно звёзд. Нужно 150.');
             });
 
             document.getElementById('btn-claim-pass')?.addEventListener('click',()=>{
@@ -679,92 +531,48 @@
         }
 
         function init() {
-            showLoading();
-            setProgress(5);
-            updateLoadingText('Подключение к заводу...');
+            setLoadingText('Подключение к заводу...');
 
             let timedOut = false;
-
             const timeout = setTimeout(() => {
                 timedOut = true;
-                showLoadError();
+                showError();
             }, 15000);
 
-            function showLoadError() {
-                const gear = document.querySelector('.loading-gear');
-                const loadingText = document.querySelector('.loading-content p');
-                const loadingBar = document.querySelector('.loading-bar');
-                const errorBlock = document.getElementById('loading-error');
-
-                if (gear) gear.style.display = 'none';
-                if (loadingBar) loadingBar.style.display = 'none';
-                if (loadingText) loadingText.style.display = 'none';
-                if (errorBlock) errorBlock.classList.remove('hidden');
-
-                document.getElementById('btn-reload')?.addEventListener('click', () => {
-                    location.reload();
-                });
-            }
-
             Promise.all([
-                fetch('tasks.json?v=' + Date.now())
-                    .then(r => r.json())
-                    .then(d => { tasksData = d; })
-                    .catch(e => console.error('Tasks load error:', e)),
-                fetch('promocodes.json?v=' + Date.now())
-                    .then(r => r.json())
-                    .then(d => { promoCodes = d; })
-                    .catch(e => console.error('Promocodes load error:', e)),
+                fetch('tasks.json?v=2').then(r=>r.json()).then(d=>{tasksData=d;}).catch(()=>{}),
+                fetch('promocodes.json?v=2').then(r=>r.json()).then(d=>{promoCodes=d;}).catch(()=>{}),
                 loadGame()
             ])
             .then(() => {
                 if (timedOut) return;
                 clearTimeout(timeout);
 
-                setProgress(25);
-                updateLoadingText('Запуск реактора...');
-
-                const steps = [
-                    { pct: 40, delay: 400, text: 'Калибровка приборов...' },
-                    { pct: 55, delay: 400, text: 'Загрузка задач партии...' },
-                    { pct: 70, delay: 400, text: 'Подключение роботов...' },
-                    { pct: 85, delay: 400, text: 'Проверка полимера...' },
-                    { pct: 95, delay: 300, text: 'Готово' }
-                ];
-
-                let i = 0;
-                function runSteps() {
-                    if (timedOut) return;
-                    if (i >= steps.length) {
-                        setProgress(100);
-                        updateLoadingText('Завод запущен');
+                setLoadingText('Запуск реактора...');
+                setTimeout(() => setLoadingText('Калибровка приборов...'), 400);
+                setTimeout(() => setLoadingText('Загрузка задач партии...'), 800);
+                setTimeout(() => setLoadingText('Подключение роботов...'), 1200);
+                setTimeout(() => setLoadingText('Проверка полимера...'), 1600);
+                setTimeout(() => {
+                    if (!timedOut) {
+                        setLoadingText('Завод запущен');
                         setTimeout(() => {
-                            if (!timedOut) {
-                                initTasks();
-                                startGame();
-                                hideLoading();
-                            }
+                            initTasks();
+                            startGame();
+                            hideLoading();
                         }, 300);
-                        return;
                     }
-                    const step = steps[i];
-                    setProgress(step.pct);
-                    updateLoadingText(step.text);
-                    i++;
-                    setTimeout(runSteps, step.delay);
-                }
-                runSteps();
+                }, 2000);
             })
-            .catch(e => {
+            .catch(() => {
                 if (timedOut) return;
                 clearTimeout(timeout);
-                console.error('Init error:', e);
-                showLoadError();
+                showError();
             });
         }
 
         window.Polymeria.state=state; window.Polymeria.init=init; window.Polymeria.updateUI=updateUI;
         window.Polymeria.saveGame=saveGame; window.Polymeria.loadGame=loadGame;
         window.Polymeria.createSparks=createSparks; window.Polymeria.COLLAPSE_HOURS=[6,12,18,0];
-    } catch(error) { console.error('Polymeria main.js error:', error); }
+    } catch(error) { console.error('Polymeria error:', error); }
 })();
