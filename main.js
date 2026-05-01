@@ -1,4 +1,4 @@
-// main.js — Polymeria v0.8 (защита от сброса + экран загрузки)
+// main.js — Polymeria v0.8 (защита от сброса + экран загрузки + таймаут)
 (function() {
     'use strict';
     try {
@@ -45,7 +45,6 @@
         let promoCodes = { universal: [], personal: [] };
         let gameStarted = false;
 
-        // Даты Pass
         const PASS_START = new Date('2026-05-01T00:00:00+03:00').getTime();
         const PASS_END = PASS_START + 60 * 24 * 60 * 60 * 1000;
 
@@ -97,6 +96,11 @@
                 if (progressBlock) progressBlock.classList.remove('hidden');
                 if (ticketsBlock) ticketsBlock.classList.remove('hidden');
                 if (rewardBlock) rewardBlock.classList.remove('hidden');
+                if (state.passOwned) {
+                    if (buyBtn) buyBtn.classList.add('hidden');
+                } else {
+                    if (buyBtn) buyBtn.classList.remove('hidden');
+                }
                 updateTasksUI();
             } else {
                 badge.textContent = 'ЗАВЕРШЁН';
@@ -553,7 +557,16 @@
 
         function showLoading() {
             const screen = document.getElementById('loading-screen');
+            const errorBlock = document.getElementById('loading-error');
+            const gear = document.querySelector('.loading-gear');
+            const loadingBar = document.querySelector('.loading-bar');
+            const loadingText = document.querySelector('.loading-content p');
+
             if (screen) screen.classList.remove('hidden');
+            if (errorBlock) errorBlock.classList.add('hidden');
+            if (gear) gear.style.display = '';
+            if (loadingBar) loadingBar.style.display = '';
+            if (loadingText) loadingText.style.display = '';
             setProgress(0);
         }
 
@@ -561,13 +574,17 @@
             const screen = document.getElementById('loading-screen');
             if (screen) {
                 screen.classList.add('hidden');
-                setTimeout(() => screen?.remove(), 600);
             }
         }
 
         function setProgress(pct) {
             const fill = document.getElementById('loading-fill');
             if (fill) fill.style.width = pct + '%';
+        }
+
+        function updateLoadingText(text) {
+            const el = document.querySelector('.loading-content p');
+            if (el) el.textContent = text;
         }
 
         function startGame() {
@@ -579,6 +596,9 @@
             ui.btnBuyRobot.addEventListener('click', buyRobot);
             ui.btnConvert.addEventListener('click', convertPolymer);
             updateUI();
+
+            document.getElementById('tab-control')?.classList.add('active');
+            document.getElementById('tab-control')?.classList.remove('hidden');
 
             setInterval(() => { if(ui.nextCollapseTime) ui.nextCollapseTime.textContent=getNextCollapseTime(); }, 60000);
             setInterval(saveGame, 30000);
@@ -632,7 +652,7 @@
                     saveGame();
                     alert('Стахановский билет куплен! Выполняйте задания Pass.');
                 } else {
-                    alert('Недостаточно звёзд. Зарабатывайте звёзды выполняя специальные задания или пополните в профиле.');
+                    alert('Недостаточно звёзд. Нужно 150. Заработайте звёзды или используйте промокод STARS150.');
                 }
             });
 
@@ -658,12 +678,34 @@
             }
         }
 
-function init() {
+        function init() {
             showLoading();
             setProgress(5);
             updateLoadingText('Подключение к заводу...');
 
-            // Сначала грузим все данные
+            let timedOut = false;
+
+            const timeout = setTimeout(() => {
+                timedOut = true;
+                showLoadError();
+            }, 15000);
+
+            function showLoadError() {
+                const gear = document.querySelector('.loading-gear');
+                const loadingText = document.querySelector('.loading-content p');
+                const loadingBar = document.querySelector('.loading-bar');
+                const errorBlock = document.getElementById('loading-error');
+
+                if (gear) gear.style.display = 'none';
+                if (loadingBar) loadingBar.style.display = 'none';
+                if (loadingText) loadingText.style.display = 'none';
+                if (errorBlock) errorBlock.classList.remove('hidden');
+
+                document.getElementById('btn-reload')?.addEventListener('click', () => {
+                    location.reload();
+                });
+            }
+
             Promise.all([
                 fetch('tasks.json?v=' + Date.now())
                     .then(r => r.json())
@@ -676,10 +718,12 @@ function init() {
                 loadGame()
             ])
             .then(() => {
+                if (timedOut) return;
+                clearTimeout(timeout);
+
                 setProgress(25);
                 updateLoadingText('Запуск реактора...');
 
-                // Этапы загрузки (только анимация)
                 const steps = [
                     { pct: 40, delay: 400, text: 'Калибровка приборов...' },
                     { pct: 55, delay: 400, text: 'Загрузка задач партии...' },
@@ -690,13 +734,16 @@ function init() {
 
                 let i = 0;
                 function runSteps() {
+                    if (timedOut) return;
                     if (i >= steps.length) {
                         setProgress(100);
                         updateLoadingText('Завод запущен');
                         setTimeout(() => {
-                            initTasks();
-                            startGame();
-                            hideLoading();
+                            if (!timedOut) {
+                                initTasks();
+                                startGame();
+                                hideLoading();
+                            }
                         }, 300);
                         return;
                     }
@@ -709,17 +756,11 @@ function init() {
                 runSteps();
             })
             .catch(e => {
+                if (timedOut) return;
+                clearTimeout(timeout);
                 console.error('Init error:', e);
-                loadGame().then(() => {
-                    startGame();
-                    hideLoading();
-                });
+                showLoadError();
             });
-        }
-
-        function updateLoadingText(text) {
-            const el = document.querySelector('.loading-content p');
-            if (el) el.textContent = text;
         }
 
         window.Polymeria.state=state; window.Polymeria.init=init; window.Polymeria.updateUI=updateUI;
