@@ -313,3 +313,60 @@ body::after { content: ""; position: fixed; bottom: -120px; left: -60px; width: 
 .promo-result-error {
     color: var(--danger);
 }
+
+/* Экран загрузки */
+.loading-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #0d0d0d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    transition: opacity 0.5s;
+}
+.loading-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.loading-content {
+    text-align: center;
+}
+.loading-content h2 {
+    color: var(--accent);
+    text-shadow: 0 0 15px var(--accent);
+    letter-spacing: 8px;
+    font-size: 1.5em;
+    margin: 20px 0 10px;
+}
+.loading-content p {
+    color: #666;
+    font-size: 0.7em;
+    margin-bottom: 20px;
+}
+.loading-bar {
+    width: 200px;
+    height: 4px;
+    background: #1a1a1a;
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+.loading-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.3s;
+    box-shadow: 0 0 10px var(--accent);
+}
+
+/* Шестерёнка загрузки */
+.loading-gear {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%2300ffcc' stroke-width='3'/%3E%3Ccircle cx='50' cy='50' r='25' fill='none' stroke='%2300ffcc' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%2300ffcc'/%3E%3Cline x1='50' y1='10' x2='50' y2='20' stroke='%2300ffcc' stroke-width='4'/%3E%3Cline x1='50' y1='80' x2='50' y2='90' stroke='%2300ffcc' stroke-width='4'/%3E%3Cline x1='10' y1='50' x2='20' y2='50' stroke='%2300ffcc' stroke-width='4'/%3E%3Cline x1='80' y1='50' x2='90' y2='50' stroke='%2300ffcc' stroke-width='4'/%3E%3C/svg%3E");
+    background-size: contain;
+    animation: spin-gear 2s linear infinite;
+}

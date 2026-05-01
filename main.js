@@ -1,4 +1,4 @@
-// main.js — Polymeria v0.7 (защита от сброса + автосохранение)
+// main.js — Polymeria v0.8 (защита от сброса + экран загрузки)
 (function() {
     'use strict';
     try {
@@ -7,7 +7,7 @@
         const defaults = {
             polymer: 0, purified: 0, energy: 100, stars: 0,
             robots: 0, baseClickValue: 1, robotCost: 10, incomePerSec: 0,
-            lastSave: null,
+            lastSave: 0,
             passOwned: false, passLevel: 1, passTickets: 0,
             passRewardsClaimed: [],
             dailyTasks: [], passTasks: [],
@@ -43,20 +43,7 @@
 
         let tasksData = { dailyTasks: [], passTasks: [], socialTasks: [], investorTasks: [] };
         let promoCodes = { universal: [], personal: [] };
-
-        // Загрузка JSON
-        fetch('tasks.json')
-            .then(r => r.json())
-            .then(d => { tasksData = d; initTasks(); })
-            .catch(e => console.error('Tasks load error:', e));
-
-        fetch('promocodes.json?v=' + Date.now())
-            .then(r => r.json())
-            .then(d => {
-                promoCodes = d;
-                console.log('Promocodes loaded:', promoCodes);
-            })
-            .catch(e => console.error('Promocodes load error:', e));
+        let gameStarted = false;
 
         // Даты Pass
         const PASS_START = new Date('2026-05-01T00:00:00+03:00').getTime();
@@ -144,6 +131,7 @@
         }
 
         function initTasks() {
+            if (!tasksData.dailyTasks.length) return;
             const today = new Date().toDateString();
             if (state.dailyTaskDate !== today) {
                 state.dailyTasks = shuffle(tasksData.dailyTasks).slice(0, 5);
@@ -222,9 +210,13 @@
             renderTaskList('social-tasks-list', tasksData.socialTasks || [], 'social', false);
             renderTaskList('investor-tasks-list', tasksData.investorTasks || [], 'investor', false);
 
-            document.getElementById('pass-level').textContent = state.passLevel;
-            document.getElementById('pass-tickets').textContent = state.passTickets;
-            document.getElementById('pass-fill').style.width = Math.min(100, (state.passTickets / 100) * 100) + '%';
+            const passLevelEl = document.getElementById('pass-level');
+            const passTicketsEl = document.getElementById('pass-tickets');
+            const passFillEl = document.getElementById('pass-fill');
+            const passRewardText = document.getElementById('pass-reward-text');
+            if (passLevelEl) passLevelEl.textContent = state.passLevel;
+            if (passTicketsEl) passTicketsEl.textContent = state.passTickets;
+            if (passFillEl) passFillEl.style.width = Math.min(100, (state.passTickets / 100) * 100) + '%';
 
             const passRewards = [
                 '', '100 отработки','100 отработки','100 отработки','100 отработки','100 отработки',
@@ -249,18 +241,18 @@
                 '1000 отработки','1000 отработки','1000 отработки','1000 отработки',
                 'Скин «Золотой пульт» +10 звёзд'
             ];
-            document.getElementById('pass-reward-text').textContent = passRewards[state.passLevel] || '—';
+            if (passRewardText) passRewardText.textContent = passRewards[state.passLevel] || '—';
 
             const buyBtn = document.getElementById('btn-buy-pass');
             const claimBtn = document.getElementById('btn-claim-pass');
             if (state.passOwned) {
-                buyBtn.classList.add('hidden');
+                if (buyBtn) buyBtn.classList.add('hidden');
                 if (state.passTickets >= 100 && state.passLevel < 100 && !state.passRewardsClaimed.includes(state.passLevel)) {
-                    claimBtn.classList.remove('hidden');
-                } else { claimBtn.classList.add('hidden'); }
+                    if (claimBtn) claimBtn.classList.remove('hidden');
+                } else { if (claimBtn) claimBtn.classList.add('hidden'); }
             } else {
-                buyBtn.classList.remove('hidden');
-                claimBtn.classList.add('hidden');
+                if (buyBtn) buyBtn.classList.remove('hidden');
+                if (claimBtn) claimBtn.classList.add('hidden');
             }
         }
 
@@ -434,8 +426,8 @@
         }
 
         function getUserId() {
-            if(window.Polymeria.tgUser?.id) return String(window.Polymeria.tgUser.id);
-            if(!localStorage.getItem('polymeria_uid')) localStorage.setItem('polymeria_uid','local_'+Date.now());
+            if(window.Polymeria.tgUser?.id) return 'tg_'+window.Polymeria.tgUser.id;
+            if(!localStorage.getItem('polymeria_uid')) localStorage.setItem('polymeria_uid','web_'+Date.now());
             return localStorage.getItem('polymeria_uid');
         }
 
@@ -519,32 +511,75 @@
         }
 
         function saveGame() {
+            state.lastSave=Date.now();
             try {
-                state.lastSave=Date.now();
                 localStorage.setItem('polymeria_save', JSON.stringify(state));
                 if(window.Polymeria.saveToCloud) window.Polymeria.saveToCloud(state);
             } catch(e) {}
         }
 
-        function loadGame() {
+        async function loadGame() {
+            let localData = null;
             try {
-                const saved=localStorage.getItem('polymeria_save');
-                if(saved) {
-                    const data=JSON.parse(saved);
-                    Object.assign(state, defaults, data);
+                const saved = localStorage.getItem('polymeria_save');
+                if (saved) localData = JSON.parse(saved);
+            } catch(e) {}
+
+            if (window.Polymeria.loadFromCloud) {
+                try {
+                    const cloudData = await window.Polymeria.loadFromCloud();
+                    if (cloudData) {
+                        const cloudTime = cloudData.lastSave || 0;
+                        const localTime = localData?.lastSave || 0;
+                        if (cloudTime > localTime) {
+                            Object.assign(state, defaults, cloudData);
+                            localStorage.setItem('polymeria_save', JSON.stringify(state));
+                        } else if (localData) {
+                            Object.assign(state, defaults, localData);
+                        }
+                    } else if (localData) {
+                        Object.assign(state, defaults, localData);
+                    }
+                } catch(e) {
+                    if (localData) Object.assign(state, defaults, localData);
                 }
-            } catch(e) { console.error('Load error:', e); }
-            state.sessionStart=Date.now();
+            } else if (localData) {
+                Object.assign(state, defaults, localData);
+            }
+
+            state.sessionStart = Date.now();
             updateUI();
         }
 
-        function init() {
-            loadGame();
+        function showLoading() {
+            const screen = document.getElementById('loading-screen');
+            if (screen) screen.classList.remove('hidden');
+            setProgress(0);
+        }
+
+        function hideLoading() {
+            const screen = document.getElementById('loading-screen');
+            if (screen) {
+                screen.classList.add('hidden');
+                setTimeout(() => screen?.remove(), 600);
+            }
+        }
+
+        function setProgress(pct) {
+            const fill = document.getElementById('loading-fill');
+            if (fill) fill.style.width = pct + '%';
+        }
+
+        function startGame() {
+            if (gameStarted) return;
+            gameStarted = true;
+
             setInterval(autoCollect, 1000);
             ui.btnHarvest.addEventListener('click', harvest);
             ui.btnBuyRobot.addEventListener('click', buyRobot);
             ui.btnConvert.addEventListener('click', convertPolymer);
             updateUI();
+
             setInterval(() => { if(ui.nextCollapseTime) ui.nextCollapseTime.textContent=getNextCollapseTime(); }, 60000);
             setInterval(saveGame, 30000);
             window.addEventListener('beforeunload', saveGame);
@@ -585,18 +620,9 @@
 
             document.getElementById('btn-buy-pass')?.addEventListener('click',()=>{
                 const status = getPassStatus();
-                if (status === 'soon') {
-                    alert('Стахановский билет ещё не доступен. Сезон 1 начнётся 1 мая.');
-                    return;
-                }
-                if (status === 'ended') {
-                    alert('Сезон 1 завершён. Ждите Сезон 2.');
-                    return;
-                }
-                if (state.passOwned) {
-                    alert('У вас уже есть Стахановский билет!');
-                    return;
-                }
+                if (status === 'soon') { alert('Стахановский билет ещё не доступен. Сезон 1 начнётся 1 мая.'); return; }
+                if (status === 'ended') { alert('Сезон 1 завершён. Ждите Сезон 2.'); return; }
+                if (state.passOwned) { alert('У вас уже есть Стахановский билет!'); return; }
                 if (state.stars >= 150) {
                     state.stars -= 150;
                     state.passOwned = true;
@@ -606,7 +632,7 @@
                     saveGame();
                     alert('Стахановский билет куплен! Выполняйте задания Pass.');
                 } else {
-                    alert('Недостаточно звёзд. Нужно 150. Заработать звёзды можно во вкладке задания.');
+                    alert('Недостаточно звёзд. Нужно 150. Заработайте звёзды или используйте промокод STARS150.');
                 }
             });
 
@@ -630,6 +656,32 @@
                 });
                 promoInput.addEventListener('keydown',(e)=>{if(e.key==='Enter') btnPromo.click();});
             }
+        }
+
+        function init() {
+            showLoading();
+            setProgress(10);
+
+            Promise.all([
+                fetch('tasks.json?v=' + Date.now()).then(r => r.json()).then(d => { tasksData = d; setProgress(40); }),
+                fetch('promocodes.json?v=' + Date.now()).then(r => r.json()).then(d => { promoCodes = d; setProgress(60); }),
+                loadGame().then(() => setProgress(80)),
+                new Promise(r => setTimeout(r, 500))
+            ])
+            .then(() => {
+                initTasks();
+                setProgress(90);
+                startGame();
+                setProgress(100);
+                hideLoading();
+            })
+            .catch(e => {
+                console.error('Init error:', e);
+                loadGame().then(() => {
+                    startGame();
+                    hideLoading();
+                });
+            });
         }
 
         window.Polymeria.state=state; window.Polymeria.init=init; window.Polymeria.updateUI=updateUI;
