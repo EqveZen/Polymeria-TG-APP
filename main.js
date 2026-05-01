@@ -50,9 +50,12 @@
             .then(d => { tasksData = d; initTasks(); })
             .catch(e => console.error('Tasks load error:', e));
 
-        fetch('promocodes.json')
+        fetch('promocodes.json?v=' + Date.now())
             .then(r => r.json())
-            .then(d => { promoCodes = d; })
+            .then(d => {
+                promoCodes = d;
+                console.log('Promocodes loaded:', promoCodes);
+            })
             .catch(e => console.error('Promocodes load error:', e));
 
         // Даты Pass
@@ -574,8 +577,30 @@
             if(btnDailyBonus){const nb=btnDailyBonus.cloneNode(true);btnDailyBonus.parentNode.replaceChild(nb,btnDailyBonus);nb.addEventListener('click',claimBonus);updateBonusButton();setInterval(updateBonusButton,1000);}
 
             document.getElementById('btn-buy-pass')?.addEventListener('click',()=>{
-                if(state.stars>=150){state.stars-=150;state.passOwned=true;updateUI();updateTasksUI();saveGame();alert('Стахановский билет куплен!');}
-                else alert('Недостаточно звёзд. Нужно 150.');
+                const status = getPassStatus();
+                if (status === 'soon') {
+                    alert('Стахановский билет ещё не доступен. Сезон 1 начнётся 1 мая.');
+                    return;
+                }
+                if (status === 'ended') {
+                    alert('Сезон 1 завершён. Ждите Сезон 2.');
+                    return;
+                }
+                if (state.passOwned) {
+                    alert('У вас уже есть Стахановский билет!');
+                    return;
+                }
+                if (state.stars >= 150) {
+                    state.stars -= 150;
+                    state.passOwned = true;
+                    updateUI();
+                    updateTasksUI();
+                    updatePassTimer();
+                    saveGame();
+                    alert('Стахановский билет куплен! Выполняйте задания Pass.');
+                } else {
+                    alert('Недостаточно звёзд. Нужно 150. Заработать звёзды можно во вкладке задания.');
+                }
             });
 
             document.getElementById('btn-claim-pass')?.addEventListener('click',()=>{
