@@ -1,7 +1,8 @@
 {
   "universal": [
     { "code": "STAHANOVS12026DEV", "reward": { "type": "pass", "amount": 1 }, "used": [] },
-    { "code": "STARS150", "reward": { "type": "stars", "amount": 150 }, "used": [] }
+    { "code": "STARS150", "reward": { "type": "stars", "amount": 150 }, "used": [] },
+    { "code": "START", "reward": { "type": "polymer", "amount": 1000 }, "used": [] }
   ],
   "personal": []
 }
