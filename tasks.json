@@ -90,7 +90,31 @@
     { "id": "D74", "type": "spend_energy", "level": 4, "desc": "Потратить {target} энергии", "target": 80, "reward": { "type": "polymer", "amount": 800 } },
     { "id": "D75", "type": "spend_energy", "level": 5, "desc": "Потратить {target} энергии", "target": 100, "reward": { "type": "polymer", "amount": 1000 } }
   ],
-  "passTasks": [],
+"passTasks": [
+    { "id": "P1", "type": "harvest_amount", "level": 1, "desc": "Добыть {target} отработки", "target": 1000, "reward": { "type": "tickets", "amount": 15 } },
+    { "id": "P2", "type": "harvest_amount", "level": 2, "desc": "Добыть {target} отработки", "target": 3000, "reward": { "type": "tickets", "amount": 20 } },
+    { "id": "P3", "type": "harvest_amount", "level": 3, "desc": "Добыть {target} отработки", "target": 10000, "reward": { "type": "tickets", "amount": 25 } },
+    { "id": "P4", "type": "harvest_amount", "level": 4, "desc": "Добыть {target} отработки", "target": 30000, "reward": { "type": "tickets", "amount": 30 } },
+    { "id": "P5", "type": "harvest_amount", "level": 5, "desc": "Добыть {target} отработки", "target": 100000, "reward": { "type": "tickets", "amount": 40 } },
+
+    { "id": "P6", "type": "buy_robots_multi", "level": 1, "desc": "Купить роботов {target} раз", "target": 5, "reward": { "type": "tickets", "amount": 20 } },
+    { "id": "P7", "type": "buy_robots_multi", "level": 2, "desc": "Купить роботов {target} раз", "target": 8, "reward": { "type": "tickets", "amount": 25 } },
+    { "id": "P8", "type": "buy_robots_multi", "level": 3, "desc": "Купить роботов {target} раз", "target": 12, "reward": { "type": "tickets", "amount": 30 } },
+    { "id": "P9", "type": "buy_robots_multi", "level": 4, "desc": "Купить роботов {target} раз", "target": 20, "reward": { "type": "tickets", "amount": 35 } },
+    { "id": "P10", "type": "buy_robots_multi", "level": 5, "desc": "Купить роботов {target} раз", "target": 30, "reward": { "type": "tickets", "amount": 45 } },
+
+    { "id": "P11", "type": "convert_multi", "level": 1, "desc": "Конвертировать отработку в полимер {target} раз", "target": 5, "reward": { "type": "tickets", "amount": 20 } },
+    { "id": "P12", "type": "convert_multi", "level": 2, "desc": "Конвертировать отработку в полимер {target} раз", "target": 8, "reward": { "type": "tickets", "amount": 25 } },
+    { "id": "P13", "type": "convert_multi", "level": 3, "desc": "Конвертировать отработку в полимер {target} раз", "target": 12, "reward": { "type": "tickets", "amount": 30 } },
+    { "id": "P14", "type": "convert_multi", "level": 4, "desc": "Конвертировать отработку в полимер {target} раз", "target": 18, "reward": { "type": "tickets", "amount": 35 } },
+    { "id": "P15", "type": "convert_multi", "level": 5, "desc": "Конвертировать отработку в полимер {target} раз", "target": 25, "reward": { "type": "tickets", "amount": 45 } },
+
+    { "id": "P16", "type": "collapse_success", "level": 1, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 25 } },
+    { "id": "P17", "type": "collapse_success", "level": 2, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 30 } },
+    { "id": "P18", "type": "collapse_success", "level": 3, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 35 } },
+    { "id": "P19", "type": "collapse_success", "level": 4, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 40 } },
+    { "id": "P20", "type": "collapse_success", "level": 5, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 50 } }
+  ],
   "socialTasks": [
     { "id": "S1", "type": "subscribe", "desc": "Подписаться на официальный канал Polymeria", "target": "@polymeriacccp", "reward": { "type": "stars", "amount": 1 } },
     { "id": "S2", "type": "join_chat", "desc": "Вступить в официальный чат Polymeria", "target": "@polymeriacccpChat", "reward": { "type": "stars", "amount": 1 } }
