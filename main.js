@@ -104,7 +104,8 @@
                 const level = getPlayerLevel();
                 const tasksForLevel = tasksData.dailyTasks.filter(t => t.level === level);
                 state.dailyTasks = shuffle(tasksForLevel).slice(0, 5);
-                state.passTasks = shuffle(tasksData.passTasks || []).slice(0, 5);
+                const passTasksForLevel = (tasksData.passTasks || []).filter(t => t.level === level);
+state.passTasks = shuffle(passTasksForLevel).slice(0, 5);
                 state.dailyTaskDate = today; state.passTaskDate = today;
                 state.completedDaily = []; state.completedPass = [];
                 state.dailyPolymerEarned = 0; state.clicksToday = 0;
