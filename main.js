@@ -1,4 +1,4 @@
-// main.js — Polymeria v1.0 (магазин + задания + 5 уровней)
+// main.js — Polymeria v1.1 (все данные внутри)
 (function() {
     'use strict';
     try {
@@ -21,15 +21,132 @@
             energySpentSession: 0,
             robotsBoughtConsecutive: 0, lastRobotBuyTime: 0,
             dailyPurifiedConverted: 0,
-            dailyRobotsBought: 0,
-            dailyAdsWatched: 0,
+            dailyRobotsBought: 0, dailyAdsWatched: 0,
             visitedProfile: false, visitedShop: false,
             claimedBonusToday: false, collapsePassed: false,
-            starsRecharged: false,
-            specialBought: false
+            starsRecharged: false, specialBought: false
         };
 
         const state = { ...defaults };
+
+        // ВСЕ ДАННЫЕ ВНУТРИ
+        const tasksData = {
+            dailyTasks: [
+                { "id": "D1", "type": "convert_one", "level": 1, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 200, "reward": { "type": "purified", "amount": 2 } },
+                { "id": "D2", "type": "convert_one", "level": 2, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 500, "reward": { "type": "purified", "amount": 4 } },
+                { "id": "D3", "type": "convert_one", "level": 3, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 1000, "reward": { "type": "purified", "amount": 8 } },
+                { "id": "D4", "type": "convert_one", "level": 4, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 2500, "reward": { "type": "purified", "amount": 15 } },
+                { "id": "D5", "type": "convert_one", "level": 5, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 5000, "reward": { "type": "purified", "amount": 25 } },
+                { "id": "D6", "type": "convert_multi", "level": 1, "desc": "Конвертировать отработку в полимер {target} раз", "target": 2, "reward": { "type": "purified", "amount": 2 } },
+                { "id": "D7", "type": "convert_multi", "level": 2, "desc": "Конвертировать отработку в полимер {target} раз", "target": 3, "reward": { "type": "purified", "amount": 3 } },
+                { "id": "D8", "type": "convert_multi", "level": 3, "desc": "Конвертировать отработку в полимер {target} раз", "target": 5, "reward": { "type": "purified", "amount": 5 } },
+                { "id": "D9", "type": "convert_multi", "level": 4, "desc": "Конвертировать отработку в полимер {target} раз", "target": 8, "reward": { "type": "purified", "amount": 8 } },
+                { "id": "D10", "type": "convert_multi", "level": 5, "desc": "Конвертировать отработку в полимер {target} раз", "target": 12, "reward": { "type": "purified", "amount": 12 } },
+                { "id": "D11", "type": "buy_robots_multi", "level": 1, "desc": "Купить роботов {target} раз", "target": 3, "reward": { "type": "polymer", "amount": 300 } },
+                { "id": "D12", "type": "buy_robots_multi", "level": 2, "desc": "Купить роботов {target} раз", "target": 5, "reward": { "type": "polymer", "amount": 500 } },
+                { "id": "D13", "type": "buy_robots_multi", "level": 3, "desc": "Купить роботов {target} раз", "target": 8, "reward": { "type": "polymer", "amount": 800 } },
+                { "id": "D14", "type": "buy_robots_multi", "level": 4, "desc": "Купить роботов {target} раз", "target": 12, "reward": { "type": "polymer", "amount": 1200 } },
+                { "id": "D15", "type": "buy_robots_multi", "level": 5, "desc": "Купить роботов {target} раз", "target": 20, "reward": { "type": "polymer", "amount": 2000 } },
+                { "id": "D16", "type": "reach_energy_30", "level": 1, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 10 } },
+                { "id": "D17", "type": "reach_energy_30", "level": 2, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 15 } },
+                { "id": "D18", "type": "reach_energy_30", "level": 3, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 20 } },
+                { "id": "D19", "type": "reach_energy_30", "level": 4, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 25 } },
+                { "id": "D20", "type": "reach_energy_30", "level": 5, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 30 } },
+                { "id": "D21", "type": "visit_profile", "level": 1, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 200 } },
+                { "id": "D22", "type": "visit_profile", "level": 2, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 300 } },
+                { "id": "D23", "type": "visit_profile", "level": 3, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 400 } },
+                { "id": "D24", "type": "visit_profile", "level": 4, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 500 } },
+                { "id": "D25", "type": "visit_profile", "level": 5, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 600 } },
+                { "id": "D26", "type": "visit_shop", "level": 1, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 200 } },
+                { "id": "D27", "type": "visit_shop", "level": 2, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 300 } },
+                { "id": "D28", "type": "visit_shop", "level": 3, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 400 } },
+                { "id": "D29", "type": "visit_shop", "level": 4, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 500 } },
+                { "id": "D30", "type": "visit_shop", "level": 5, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 600 } },
+                { "id": "D31", "type": "claim_bonus", "level": 1, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 3 } },
+                { "id": "D32", "type": "claim_bonus", "level": 2, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 5 } },
+                { "id": "D33", "type": "claim_bonus", "level": 3, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 8 } },
+                { "id": "D34", "type": "claim_bonus", "level": 4, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 12 } },
+                { "id": "D35", "type": "claim_bonus", "level": 5, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 20 } },
+                { "id": "D36", "type": "collapse_success", "level": 1, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 15 } },
+                { "id": "D37", "type": "collapse_success", "level": 2, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 20 } },
+                { "id": "D38", "type": "collapse_success", "level": 3, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 25 } },
+                { "id": "D39", "type": "collapse_success", "level": 4, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 30 } },
+                { "id": "D40", "type": "collapse_success", "level": 5, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 40 } },
+                { "id": "D41", "type": "watch_ads", "level": 1, "desc": "Посмотреть рекламу {target} раз", "target": 1, "reward": { "type": "energy", "amount": 5 } },
+                { "id": "D42", "type": "watch_ads", "level": 2, "desc": "Посмотреть рекламу {target} раз", "target": 2, "reward": { "type": "energy", "amount": 10 } },
+                { "id": "D43", "type": "watch_ads", "level": 3, "desc": "Посмотреть рекламу {target} раз", "target": 3, "reward": { "type": "energy", "amount": 15 } },
+                { "id": "D44", "type": "watch_ads", "level": 4, "desc": "Посмотреть рекламу {target} раз", "target": 4, "reward": { "type": "energy", "amount": 20 } },
+                { "id": "D45", "type": "watch_ads", "level": 5, "desc": "Посмотреть рекламу {target} раз", "target": 5, "reward": { "type": "energy", "amount": 25 } },
+                { "id": "D46", "type": "work_clicks", "level": 1, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 50, "reward": { "type": "polymer", "amount": 300 } },
+                { "id": "D47", "type": "work_clicks", "level": 2, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 100, "reward": { "type": "polymer", "amount": 500 } },
+                { "id": "D48", "type": "work_clicks", "level": 3, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 200, "reward": { "type": "polymer", "amount": 800 } },
+                { "id": "D49", "type": "work_clicks", "level": 4, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 400, "reward": { "type": "polymer", "amount": 1200 } },
+                { "id": "D50", "type": "work_clicks", "level": 5, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 800, "reward": { "type": "polymer", "amount": 2000 } },
+                { "id": "D51", "type": "invite_friend", "level": 1, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 2 } },
+                { "id": "D52", "type": "invite_friend", "level": 2, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 3 } },
+                { "id": "D53", "type": "invite_friend", "level": 3, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 5 } },
+                { "id": "D54", "type": "invite_friend", "level": 4, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 8 } },
+                { "id": "D55", "type": "invite_friend", "level": 5, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 10 } },
+                { "id": "D56", "type": "recharge_stars", "level": 1, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 500 } },
+                { "id": "D57", "type": "recharge_stars", "level": 2, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 800 } },
+                { "id": "D58", "type": "recharge_stars", "level": 3, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 1200 } },
+                { "id": "D59", "type": "recharge_stars", "level": 4, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 2000 } },
+                { "id": "D60", "type": "recharge_stars", "level": 5, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 3000 } },
+                { "id": "D61", "type": "harvest_amount", "level": 1, "desc": "Добыть {target} отработки", "target": 500, "reward": { "type": "polymer", "amount": 200 } },
+                { "id": "D62", "type": "harvest_amount", "level": 2, "desc": "Добыть {target} отработки", "target": 1500, "reward": { "type": "polymer", "amount": 400 } },
+                { "id": "D63", "type": "harvest_amount", "level": 3, "desc": "Добыть {target} отработки", "target": 5000, "reward": { "type": "polymer", "amount": 800 } },
+                { "id": "D64", "type": "harvest_amount", "level": 4, "desc": "Добыть {target} отработки", "target": 15000, "reward": { "type": "polymer", "amount": 1500 } },
+                { "id": "D65", "type": "harvest_amount", "level": 5, "desc": "Добыть {target} отработки", "target": 50000, "reward": { "type": "polymer", "amount": 3000 } },
+                { "id": "D66", "type": "accumulate", "level": 1, "desc": "Накопить {target} отработки", "target": 300, "reward": { "type": "purified", "amount": 1 } },
+                { "id": "D67", "type": "accumulate", "level": 2, "desc": "Накопить {target} отработки", "target": 800, "reward": { "type": "purified", "amount": 2 } },
+                { "id": "D68", "type": "accumulate", "level": 3, "desc": "Накопить {target} отработки", "target": 2000, "reward": { "type": "purified", "amount": 4 } },
+                { "id": "D69", "type": "accumulate", "level": 4, "desc": "Накопить {target} отработки", "target": 5000, "reward": { "type": "purified", "amount": 8 } },
+                { "id": "D70", "type": "accumulate", "level": 5, "desc": "Накопить {target} отработки", "target": 15000, "reward": { "type": "purified", "amount": 15 } },
+                { "id": "D71", "type": "spend_energy", "level": 1, "desc": "Потратить {target} энергии", "target": 20, "reward": { "type": "polymer", "amount": 200 } },
+                { "id": "D72", "type": "spend_energy", "level": 2, "desc": "Потратить {target} энергии", "target": 40, "reward": { "type": "polymer", "amount": 400 } },
+                { "id": "D73", "type": "spend_energy", "level": 3, "desc": "Потратить {target} энергии", "target": 60, "reward": { "type": "polymer", "amount": 600 } },
+                { "id": "D74", "type": "spend_energy", "level": 4, "desc": "Потратить {target} энергии", "target": 80, "reward": { "type": "polymer", "amount": 800 } },
+                { "id": "D75", "type": "spend_energy", "level": 5, "desc": "Потратить {target} энергии", "target": 100, "reward": { "type": "polymer", "amount": 1000 } }
+            ],
+            passTasks: [
+                { "id": "P1", "type": "harvest_amount", "level": 1, "desc": "Добыть {target} отработки", "target": 1000, "reward": { "type": "tickets", "amount": 15 } },
+                { "id": "P2", "type": "harvest_amount", "level": 2, "desc": "Добыть {target} отработки", "target": 3000, "reward": { "type": "tickets", "amount": 20 } },
+                { "id": "P3", "type": "harvest_amount", "level": 3, "desc": "Добыть {target} отработки", "target": 10000, "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P4", "type": "harvest_amount", "level": 4, "desc": "Добыть {target} отработки", "target": 30000, "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P5", "type": "harvest_amount", "level": 5, "desc": "Добыть {target} отработки", "target": 100000, "reward": { "type": "tickets", "amount": 40 } },
+                { "id": "P6", "type": "buy_robots_multi", "level": 1, "desc": "Купить роботов {target} раз", "target": 5, "reward": { "type": "tickets", "amount": 20 } },
+                { "id": "P7", "type": "buy_robots_multi", "level": 2, "desc": "Купить роботов {target} раз", "target": 8, "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P8", "type": "buy_robots_multi", "level": 3, "desc": "Купить роботов {target} раз", "target": 12, "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P9", "type": "buy_robots_multi", "level": 4, "desc": "Купить роботов {target} раз", "target": 20, "reward": { "type": "tickets", "amount": 35 } },
+                { "id": "P10", "type": "buy_robots_multi", "level": 5, "desc": "Купить роботов {target} раз", "target": 30, "reward": { "type": "tickets", "amount": 45 } },
+                { "id": "P11", "type": "convert_multi", "level": 1, "desc": "Конвертировать отработку в полимер {target} раз", "target": 5, "reward": { "type": "tickets", "amount": 20 } },
+                { "id": "P12", "type": "convert_multi", "level": 2, "desc": "Конвертировать отработку в полимер {target} раз", "target": 8, "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P13", "type": "convert_multi", "level": 3, "desc": "Конвертировать отработку в полимер {target} раз", "target": 12, "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P14", "type": "convert_multi", "level": 4, "desc": "Конвертировать отработку в полимер {target} раз", "target": 18, "reward": { "type": "tickets", "amount": 35 } },
+                { "id": "P15", "type": "convert_multi", "level": 5, "desc": "Конвертировать отработку в полимер {target} раз", "target": 25, "reward": { "type": "tickets", "amount": 45 } },
+                { "id": "P16", "type": "collapse_success", "level": 1, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 25 } },
+                { "id": "P17", "type": "collapse_success", "level": 2, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 30 } },
+                { "id": "P18", "type": "collapse_success", "level": 3, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 35 } },
+                { "id": "P19", "type": "collapse_success", "level": 4, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 40 } },
+                { "id": "P20", "type": "collapse_success", "level": 5, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "tickets", "amount": 50 } }
+            ],
+            socialTasks: [
+                { "id": "S1", "type": "subscribe", "desc": "Подписаться на официальный канал Polymeria", "target": "@polymeriacccp", "reward": { "type": "stars", "amount": 1 } },
+                { "id": "S2", "type": "join_chat", "desc": "Вступить в официальный чат Polymeria", "target": "@polymeriacccpChat", "reward": { "type": "stars", "amount": 1 } }
+            ],
+            investorTasks: [
+                { "id": "I1", "type": "subscribe", "desc": "Подписаться на канал Новости с дивана", "target": "@news_divan_roman", "reward": { "type": "stars", "amount": 1 } }
+            ]
+        };
+
+        const promoCodes = {
+            universal: [
+                { "code": "STAHANOVS12026DEV", "reward": { "type": "pass", "amount": 1 }, "used": [] },
+                { "code": "STARS150", "reward": { "type": "stars", "amount": 150 }, "used": [] },
+                { "code": "START", "reward": { "type": "polymer", "amount": 1000 }, "used": [] }
+            ],
+            personal: []
+        };
 
         const ui = {
             polymer: document.getElementById('resource-polymer'),
@@ -48,8 +165,6 @@
             nextCollapseTime: document.getElementById('next-collapse-time')
         };
 
-        let tasksData = { dailyTasks: [], passTasks: [], socialTasks: [], investorTasks: [] };
-        let promoCodes = { universal: [], personal: [] };
         let gameStarted = false;
 
         function getPlayerLevel() {
@@ -80,7 +195,6 @@
                 badge.textContent = 'СКОРО'; badge.className = 'pass-status-badge soon';
                 const left = PASS_START - now;
                 timer.textContent = `Сезон 1 начнётся через ${Math.floor(left/86400000)}д ${Math.floor((left%86400000)/3600000)}ч`;
-                timer.className = 'pass-timer';
                 [levelBlock, progressBlock, ticketsBlock, rewardBlock, buyBtn].forEach(e => { if(e) e.classList.add('hidden'); });
             } else if (status === 'active') {
                 badge.textContent = 'ВРЕМЯ ПРИШЛО !!!'; badge.className = 'pass-status-badge active';
@@ -105,7 +219,7 @@
                 const tasksForLevel = tasksData.dailyTasks.filter(t => t.level === level);
                 state.dailyTasks = shuffle(tasksForLevel).slice(0, 5);
                 const passTasksForLevel = (tasksData.passTasks || []).filter(t => t.level === level);
-state.passTasks = shuffle(passTasksForLevel).slice(0, 5);
+                state.passTasks = shuffle(passTasksForLevel).slice(0, 5);
                 state.dailyTaskDate = today; state.passTaskDate = today;
                 state.completedDaily = []; state.completedPass = [];
                 state.dailyPolymerEarned = 0; state.clicksToday = 0;
@@ -147,8 +261,7 @@ state.passTasks = shuffle(passTasksForLevel).slice(0, 5);
         }
 
         function isTaskComplete(task) {
-            const prog = getTaskProgress(task);
-            return prog >= (task.target || 1);
+            return getTaskProgress(task) >= (task.target || 1);
         }
 
         function updateTasksUI() {
@@ -171,7 +284,7 @@ state.passTasks = shuffle(passTasksForLevel).slice(0, 5);
 
         function renderTaskList(containerId, tasks, type, dim) {
             const container = document.getElementById(containerId);
-            if (!container || !tasks.length) return;
+            if (!container || !tasks.length) { if(container) container.innerHTML = ''; return; }
             let html = '';
             const completed = type === 'pass' ? state.completedPass : type === 'daily' ? state.completedDaily : type === 'social' ? state.completedSocial : state.completedInvestor;
             const isSocial = (type === 'social');
@@ -179,10 +292,10 @@ state.passTasks = shuffle(passTasksForLevel).slice(0, 5);
             tasks.forEach(task => {
                 const done = completed.includes(task.id);
                 if (isSocial) {
-                    html += `<div class="task-item"><div class="task-item-info"><span class="task-item-desc">${task.desc}</span><span class="task-item-reward">Награда: ${task.reward.amount} ${task.reward.type==='stars'?'звёзд':'отработки'}</span></div>${done?'<span class="task-done">ВЫПОЛНЕНО</span>':`<button class="task-claim-btn task-go-btn" data-type="${type}" data-id="${task.id}">ПЕРЕЙТИ</button>`}</div>`;
+                    html += `<div class="task-item"><div class="task-item-info"><span class="task-item-desc">${task.desc}</span><span class="task-item-reward">Награда: ${task.reward.amount} ${task.reward.type==='stars'?'звёзд':'отработки'}</span></div>${done?'<span class="task-done">ВЫПОЛНЕНО</span>':'<button class="task-claim-btn task-go-btn" data-type="'+type+'" data-id="'+task.id+'">ПЕРЕЙТИ</button>'}</div>`;
                 } else {
                     const prog = getTaskProgress(task), t = task.target || 1, pt = Math.min(prog, t) + '/' + t;
-                    html += `<div class="task-item ${dim?'dim':''}"><div class="task-item-info"><span class="task-item-desc">${task.desc.replace('{target}',t)}</span><span class="task-item-reward">Награда: ${task.reward.amount} ${task.reward.type==='tickets'?'БП':task.reward.type==='polymer'?'отработки':task.reward.type==='purified'?'полимера':task.reward.type==='energy'?'энергии':'звёзд'}</span><span class="task-item-progress">${pt}</span></div>${done?'<span class="task-done">ВЫПОЛНЕНО</span>':`<button class="task-claim-btn" ${(dim||!isTaskComplete(task))?'disabled':''} data-type="${type}" data-id="${task.id}">ЗАБРАТЬ</button>`}</div>`;
+                    html += '<div class="task-item'+(dim?' dim':'')+'"><div class="task-item-info"><span class="task-item-desc">'+task.desc.replace('{target}',t)+'</span><span class="task-item-reward">Награда: '+task.reward.amount+' '+(task.reward.type==='tickets'?'БП':task.reward.type==='polymer'?'отработки':task.reward.type==='purified'?'полимера':task.reward.type==='energy'?'энергии':'звёзд')+'</span><span class="task-item-progress">'+pt+'</span></div>'+(done?'<span class="task-done">ВЫПОЛНЕНО</span>':'<button class="task-claim-btn"'+((dim||!isTaskComplete(task))?' disabled':'')+' data-type="'+type+'" data-id="'+task.id+'">ЗАБРАТЬ</button>')+'</div>';
                 }
             });
             container.innerHTML = html;
@@ -213,17 +326,9 @@ state.passTasks = shuffle(passTasksForLevel).slice(0, 5);
                 }
                 if (window.Polymeria.tgUser?.id) {
                     const isSub = await checkSubscription(window.Polymeria.tgUser.id, task.target.replace('@',''));
-                    if (isSub) {
-                        completed.push(taskId);
-                        if (task.reward.type === 'stars') state.stars += task.reward.amount;
-                        updateUI(); updateTasksUI(); saveGame();
-                        alert('Подписка подтверждена! Награда начислена.');
-                    } else alert('Вы ещё не подписались. Подпишитесь и попробуйте снова.');
-                } else {
-                    completed.push(taskId);
-                    if (task.reward.type === 'stars') state.stars += task.reward.amount;
-                    updateUI(); updateTasksUI(); saveGame();
-                }
+                    if (isSub) { completed.push(taskId); if (task.reward.type === 'stars') state.stars += task.reward.amount; updateUI(); updateTasksUI(); saveGame(); alert('Подписка подтверждена!'); }
+                    else alert('Вы ещё не подписались.');
+                } else { completed.push(taskId); if (task.reward.type === 'stars') state.stars += task.reward.amount; updateUI(); updateTasksUI(); saveGame(); }
                 return;
             }
 
@@ -368,10 +473,10 @@ state.passTasks = shuffle(passTasksForLevel).slice(0, 5);
             if(ui.lampCollapse) ui.lampCollapse.className='status-lamp off';
             if(ui.nextCollapseTime) ui.nextCollapseTime.textContent=getNextCollapseTime();
             updateProfileTab(); updateShopTab();
-            document.getElementById('shop-pass-level').textContent = state.passLevel;
+            const spl = document.getElementById('shop-pass-level'); if(spl) spl.textContent = state.passLevel;
             if (state.passOwned) {
-                document.getElementById('shop-pass-card').classList.add('hidden');
-                document.getElementById('shop-pass-active').classList.remove('hidden');
+                const card = document.getElementById('shop-pass-card'); if(card) card.classList.add('hidden');
+                const active = document.getElementById('shop-pass-active'); if(active) active.classList.remove('hidden');
             }
         }
 
@@ -561,11 +666,13 @@ state.passTasks = shuffle(passTasksForLevel).slice(0, 5);
 
         function init() {
             setLoadingText('Подключение к заводу...');
-            let timedOut = false;
-            const timeout = setTimeout(() => { timedOut = true; showError(); }, 15000);
-            Promise.all([fetch('tasks.json?v=3').then(r=>r.json()).then(d=>{tasksData=d;}).catch(()=>{}),fetch('promocodes.json?v=2').then(r=>r.json()).then(d=>{promoCodes=d;}).catch(()=>{}),loadGame()])
-            .then(() => { if (timedOut) return; clearTimeout(timeout); setLoadingText('Запуск реактора...'); setTimeout(() => setLoadingText('Калибровка приборов...'), 400); setTimeout(() => setLoadingText('Загрузка задач партии...'), 800); setTimeout(() => setLoadingText('Подключение роботов...'), 1200); setTimeout(() => setLoadingText('Проверка полимера...'), 1600); setTimeout(() => { if (!timedOut) { setLoadingText('Завод запущен'); setTimeout(() => { initTasks(); startGame(); hideLoading(); }, 300); } }, 2000); })
-            .catch(() => { if (timedOut) return; clearTimeout(timeout); showError(); });
+            loadGame().then(() => {
+                setLoadingText('Запуск реактора...');
+                setTimeout(() => setLoadingText('Калибровка приборов...'), 500);
+                setTimeout(() => setLoadingText('Загрузка задач партии...'), 1000);
+                setTimeout(() => setLoadingText('Подключение роботов...'), 1500);
+                setTimeout(() => { setLoadingText('Завод запущен'); setTimeout(() => { initTasks(); startGame(); hideLoading(); }, 400); }, 2000);
+            });
         }
 
         window.Polymeria.state=state; window.Polymeria.init=init; window.Polymeria.updateUI=updateUI;
