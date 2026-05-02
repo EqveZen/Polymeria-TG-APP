@@ -30,6 +30,9 @@ body {
     max-width: 420px;
     width: 100%;
     padding-bottom: 70px;
+    height: 100vh;
+    overflow-y: auto;
+    position: relative;
 }
 
 .panel {
@@ -365,4 +368,215 @@ body::after { content: ""; position: fixed; bottom: -120px; left: -60px; width: 
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%2300ffcc' stroke-width='3'/%3E%3Ccircle cx='50' cy='50' r='25' fill='none' stroke='%2300ffcc' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%2300ffcc'/%3E%3Cline x1='50' y1='10' x2='50' y2='20' stroke='%2300ffcc' stroke-width='4'/%3E%3Cline x1='50' y1='80' x2='50' y2='90' stroke='%2300ffcc' stroke-width='4'/%3E%3Cline x1='10' y1='50' x2='20' y2='50' stroke='%2300ffcc' stroke-width='4'/%3E%3Cline x1='80' y1='50' x2='90' y2='50' stroke='%2300ffcc' stroke-width='4'/%3E%3C/svg%3E");
     background-size: contain;
     animation: spin-gear 2s linear infinite;
+}
+
+.profile-conversion {
+    margin: 0 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.conversion-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 0.6em;
+    color: #aaa;
+    gap: 8px;
+}
+.conversion-row span {
+    flex: 1;
+}
+
+/* Мини-игра коллапса */
+.collapse-game-content {
+    max-width: 340px;
+    background: #1a1a1a;
+    border: 2px solid var(--accent);
+    padding: 16px;
+    text-align: left;
+    box-shadow: 0 0 40px var(--accent), inset 0 0 20px rgba(0,255,204,0.05);
+}
+.collapse-game-header {
+    text-align: center;
+    margin-bottom: 12px;
+}
+.collapse-stamp {
+    display: inline-block;
+    font-size: 0.7em;
+    color: var(--danger);
+    border: 2px solid var(--danger);
+    padding: 4px 12px;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    text-shadow: 0 0 6px var(--danger);
+}
+.collapse-game-header h2 {
+    color: var(--accent);
+    font-size: 0.9em;
+    letter-spacing: 2px;
+    margin: 4px 0;
+}
+.collapse-date {
+    font-size: 0.6em;
+    color: #888;
+}
+.collapse-game-body {
+    font-size: 0.7em;
+    color: #ccc;
+    line-height: 1.5;
+}
+.collapse-game-body ol {
+    padding-left: 16px;
+    margin: 6px 0;
+}
+.collapse-game-body ol li {
+    margin-bottom: 4px;
+}
+.collapse-hint {
+    background: #111;
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 8px;
+    margin: 10px 0;
+    font-size: 0.75em;
+    color: var(--gold);
+    text-align: center;
+}
+.collapse-hint strong {
+    color: #fff;
+}
+.collapse-signatures {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+}
+.collapse-sign-btn {
+    width: 100%;
+    padding: 10px;
+    background: #111;
+    border: 1px solid #555;
+    border-radius: 4px;
+    color: #ccc;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    text-align: center;
+    transition: 0.2s;
+}
+.collapse-sign-btn:hover {
+    background: #222;
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.collapse-sign-btn small {
+    color: #888;
+    font-size: 0.7em;
+}
+.collapse-timer {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 0.7em;
+    color: var(--accent);
+    font-weight: bold;
+}
+
+/* Магазин — пасс-карточка */
+.shop-pass-card {
+    background: #111;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+.shop-pass-title {
+    font-size: 1em;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-shadow: 0 0 8px var(--gold);
+    margin-bottom: 4px;
+}
+.shop-pass-desc {
+    font-size: 0.6em;
+    color: #888;
+    margin-bottom: 8px;
+}
+.shop-pass-price {
+    font-size: 0.8em;
+    color: #fff;
+    margin-bottom: 8px;
+}
+.shop-pass-btn {
+    padding: 10px 24px;
+    background: var(--gold);
+    border: none;
+    border-radius: 4px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+}
+.shop-pass-btn:hover {
+    background: #ffed4a;
+}
+
+/* Таймер спецпредложения */
+.shop-timer {
+    font-size: 0.6em;
+    color: var(--accent);
+    font-weight: normal;
+}
+
+/* Рекламная кнопка */
+.ad-btn {
+    border-color: #4a9 !important;
+    color: #4a9 !important;
+}
+
+/* Модальное окно рекламы */
+.ad-content {
+    max-width: 300px;
+    text-align: center;
+}
+.ad-banner {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 12px 0;
+}
+.ad-timer {
+    font-size: 1.2em;
+    color: var(--accent);
+    margin: 10px 0;
+}
+.ad-link-btn {
+    width: 100%;
+    padding: 10px;
+    background: #2a2a2a;
+    border: 1px solid #4a9;
+    border-radius: 4px;
+    color: #4a9;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.7em;
+    margin-bottom: 6px;
+}
+.ad-claim-btn {
+    width: 100%;
+    padding: 10px;
+    background: #1a3a1a;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    color: var(--accent);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.7em;
 }

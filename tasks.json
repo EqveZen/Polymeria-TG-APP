@@ -1,53 +1,101 @@
 {
   "dailyTasks": [
-    { "id": "D1", "type": "harvest", "desc": "Добыть {target} отработки", "reward": { "type": "polymer", "amount": 200 } },
-    { "id": "D2", "type": "buy_robots", "desc": "Нанять {target} роботов", "reward": { "type": "purified", "amount": 3 } },
-    { "id": "D3", "type": "watch_ad", "desc": "Посмотреть рекламу", "reward": { "type": "energy", "amount": 10 } },
-    { "id": "D4", "type": "playtime", "desc": "Провести {target} мин в игре", "reward": { "type": "purified", "amount": 2 } },
-    { "id": "D5", "type": "convert", "desc": "Конвертировать {target} полимера", "reward": { "type": "purified", "amount": 3 } },
-    { "id": "D6", "type": "survive_collapse", "desc": "Пережить 1 коллапс", "reward": { "type": "energy", "amount": 20 } },
-    { "id": "D7", "type": "clicks", "desc": "Нажать кнопку {target} раз", "reward": { "type": "polymer", "amount": 300 } },
-    { "id": "D8", "type": "accumulate", "desc": "Накопить {target} отработки", "reward": { "type": "purified", "amount": 2 } },
-    { "id": "D9", "type": "shop_buy", "desc": "Купить 1 улучшение", "reward": { "type": "polymer", "amount": 500 } },
-    { "id": "D10", "type": "spend_energy", "desc": "Потратить {target} энергии", "reward": { "type": "polymer", "amount": 400 } },
-    { "id": "D11", "type": "harvest_precise", "desc": "Добыть {target} отработки (±10%)", "reward": { "type": "polymer", "amount": 300 } },
-    { "id": "D12", "type": "buy_robots_consecutive", "desc": "Нанять 3 роботов подряд", "reward": { "type": "purified", "amount": 2 } },
-    { "id": "D13", "type": "watch_ad_x2", "desc": "Посмотреть 2 рекламы", "reward": { "type": "energy", "amount": 15 } },
-    { "id": "D14", "type": "playtime_long", "desc": "Провести {target} мин в игре", "reward": { "type": "purified", "amount": 3 } },
-    { "id": "D15", "type": "convert", "desc": "Конвертировать {target} полимера", "reward": { "type": "purified", "amount": 2 } },
-    { "id": "D16", "type": "survive_collapse_risk", "desc": "Пережить коллапс (Риск)", "reward": { "type": "energy", "amount": 25 } },
-    { "id": "D17", "type": "clicks", "desc": "Нажать кнопку {target} раз", "reward": { "type": "polymer", "amount": 350 } },
-    { "id": "D18", "type": "buy_consecutive", "desc": "Нанять 5 роботов подряд", "reward": { "type": "purified", "amount": 4 } },
-    { "id": "D19", "type": "shop_buy_x2", "desc": "Купить 2 улучшения", "reward": { "type": "polymer", "amount": 600 } },
-    { "id": "D20", "type": "spend_energy_session", "desc": "Потратить {target} энергии за сессию", "reward": { "type": "polymer", "amount": 450 } }
+    { "id": "D1", "type": "convert_one", "level": 1, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 200, "reward": { "type": "purified", "amount": 2 } },
+    { "id": "D2", "type": "convert_one", "level": 2, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 500, "reward": { "type": "purified", "amount": 4 } },
+    { "id": "D3", "type": "convert_one", "level": 3, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 1000, "reward": { "type": "purified", "amount": 8 } },
+    { "id": "D4", "type": "convert_one", "level": 4, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 2500, "reward": { "type": "purified", "amount": 15 } },
+    { "id": "D5", "type": "convert_one", "level": 5, "desc": "Конвертировать {target} отработки в полимер за один раз", "target": 5000, "reward": { "type": "purified", "amount": 25 } },
+
+    { "id": "D6", "type": "convert_multi", "level": 1, "desc": "Конвертировать отработку в полимер {target} раз", "target": 2, "reward": { "type": "purified", "amount": 2 } },
+    { "id": "D7", "type": "convert_multi", "level": 2, "desc": "Конвертировать отработку в полимер {target} раз", "target": 3, "reward": { "type": "purified", "amount": 3 } },
+    { "id": "D8", "type": "convert_multi", "level": 3, "desc": "Конвертировать отработку в полимер {target} раз", "target": 5, "reward": { "type": "purified", "amount": 5 } },
+    { "id": "D9", "type": "convert_multi", "level": 4, "desc": "Конвертировать отработку в полимер {target} раз", "target": 8, "reward": { "type": "purified", "amount": 8 } },
+    { "id": "D10", "type": "convert_multi", "level": 5, "desc": "Конвертировать отработку в полимер {target} раз", "target": 12, "reward": { "type": "purified", "amount": 12 } },
+
+    { "id": "D11", "type": "buy_robots_multi", "level": 1, "desc": "Купить роботов {target} раз", "target": 3, "reward": { "type": "polymer", "amount": 300 } },
+    { "id": "D12", "type": "buy_robots_multi", "level": 2, "desc": "Купить роботов {target} раз", "target": 5, "reward": { "type": "polymer", "amount": 500 } },
+    { "id": "D13", "type": "buy_robots_multi", "level": 3, "desc": "Купить роботов {target} раз", "target": 8, "reward": { "type": "polymer", "amount": 800 } },
+    { "id": "D14", "type": "buy_robots_multi", "level": 4, "desc": "Купить роботов {target} раз", "target": 12, "reward": { "type": "polymer", "amount": 1200 } },
+    { "id": "D15", "type": "buy_robots_multi", "level": 5, "desc": "Купить роботов {target} раз", "target": 20, "reward": { "type": "polymer", "amount": 2000 } },
+
+    { "id": "D16", "type": "reach_energy_30", "level": 1, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 10 } },
+    { "id": "D17", "type": "reach_energy_30", "level": 2, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 15 } },
+    { "id": "D18", "type": "reach_energy_30", "level": 3, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 20 } },
+    { "id": "D19", "type": "reach_energy_30", "level": 4, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 25 } },
+    { "id": "D20", "type": "reach_energy_30", "level": 5, "desc": "Достичь энергии не менее 30", "target": 1, "reward": { "type": "energy", "amount": 30 } },
+
+    { "id": "D21", "type": "visit_profile", "level": 1, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 200 } },
+    { "id": "D22", "type": "visit_profile", "level": 2, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 300 } },
+    { "id": "D23", "type": "visit_profile", "level": 3, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 400 } },
+    { "id": "D24", "type": "visit_profile", "level": 4, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 500 } },
+    { "id": "D25", "type": "visit_profile", "level": 5, "desc": "Зайти во вкладку Профиль", "target": 1, "reward": { "type": "polymer", "amount": 600 } },
+
+    { "id": "D26", "type": "visit_shop", "level": 1, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 200 } },
+    { "id": "D27", "type": "visit_shop", "level": 2, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 300 } },
+    { "id": "D28", "type": "visit_shop", "level": 3, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 400 } },
+    { "id": "D29", "type": "visit_shop", "level": 4, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 500 } },
+    { "id": "D30", "type": "visit_shop", "level": 5, "desc": "Зайти во вкладку Магазин", "target": 1, "reward": { "type": "polymer", "amount": 600 } },
+
+    { "id": "D31", "type": "claim_bonus", "level": 1, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 3 } },
+    { "id": "D32", "type": "claim_bonus", "level": 2, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 5 } },
+    { "id": "D33", "type": "claim_bonus", "level": 3, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 8 } },
+    { "id": "D34", "type": "claim_bonus", "level": 4, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 12 } },
+    { "id": "D35", "type": "claim_bonus", "level": 5, "desc": "Получить ежедневный бонус", "target": 1, "reward": { "type": "purified", "amount": 20 } },
+
+    { "id": "D36", "type": "collapse_success", "level": 1, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 15 } },
+    { "id": "D37", "type": "collapse_success", "level": 2, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 20 } },
+    { "id": "D38", "type": "collapse_success", "level": 3, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 25 } },
+    { "id": "D39", "type": "collapse_success", "level": 4, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 30 } },
+    { "id": "D40", "type": "collapse_success", "level": 5, "desc": "Успешно пройти коллапс", "target": 1, "reward": { "type": "energy", "amount": 40 } },
+
+    { "id": "D41", "type": "watch_ads", "level": 1, "desc": "Посмотреть рекламу {target} раз", "target": 1, "reward": { "type": "energy", "amount": 5 } },
+    { "id": "D42", "type": "watch_ads", "level": 2, "desc": "Посмотреть рекламу {target} раз", "target": 2, "reward": { "type": "energy", "amount": 10 } },
+    { "id": "D43", "type": "watch_ads", "level": 3, "desc": "Посмотреть рекламу {target} раз", "target": 3, "reward": { "type": "energy", "amount": 15 } },
+    { "id": "D44", "type": "watch_ads", "level": 4, "desc": "Посмотреть рекламу {target} раз", "target": 4, "reward": { "type": "energy", "amount": 20 } },
+    { "id": "D45", "type": "watch_ads", "level": 5, "desc": "Посмотреть рекламу {target} раз", "target": 5, "reward": { "type": "energy", "amount": 25 } },
+
+    { "id": "D46", "type": "work_clicks", "level": 1, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 50, "reward": { "type": "polymer", "amount": 300 } },
+    { "id": "D47", "type": "work_clicks", "level": 2, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 100, "reward": { "type": "polymer", "amount": 500 } },
+    { "id": "D48", "type": "work_clicks", "level": 3, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 200, "reward": { "type": "polymer", "amount": 800 } },
+    { "id": "D49", "type": "work_clicks", "level": 4, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 400, "reward": { "type": "polymer", "amount": 1200 } },
+    { "id": "D50", "type": "work_clicks", "level": 5, "desc": "Нажать РАБОТАТЬ {target} раз", "target": 800, "reward": { "type": "polymer", "amount": 2000 } },
+
+    { "id": "D51", "type": "invite_friend", "level": 1, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 2 } },
+    { "id": "D52", "type": "invite_friend", "level": 2, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 3 } },
+    { "id": "D53", "type": "invite_friend", "level": 3, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 5 } },
+    { "id": "D54", "type": "invite_friend", "level": 4, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 8 } },
+    { "id": "D55", "type": "invite_friend", "level": 5, "desc": "Пригласить 1 друга", "target": 1, "reward": { "type": "stars", "amount": 10 } },
+
+    { "id": "D56", "type": "recharge_stars", "level": 1, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 500 } },
+    { "id": "D57", "type": "recharge_stars", "level": 2, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 800 } },
+    { "id": "D58", "type": "recharge_stars", "level": 3, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 1200 } },
+    { "id": "D59", "type": "recharge_stars", "level": 4, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 2000 } },
+    { "id": "D60", "type": "recharge_stars", "level": 5, "desc": "Пополнить звёзды (не больше 50)", "target": 1, "reward": { "type": "polymer", "amount": 3000 } },
+
+    { "id": "D61", "type": "harvest_amount", "level": 1, "desc": "Добыть {target} отработки", "target": 500, "reward": { "type": "polymer", "amount": 200 } },
+    { "id": "D62", "type": "harvest_amount", "level": 2, "desc": "Добыть {target} отработки", "target": 1500, "reward": { "type": "polymer", "amount": 400 } },
+    { "id": "D63", "type": "harvest_amount", "level": 3, "desc": "Добыть {target} отработки", "target": 5000, "reward": { "type": "polymer", "amount": 800 } },
+    { "id": "D64", "type": "harvest_amount", "level": 4, "desc": "Добыть {target} отработки", "target": 15000, "reward": { "type": "polymer", "amount": 1500 } },
+    { "id": "D65", "type": "harvest_amount", "level": 5, "desc": "Добыть {target} отработки", "target": 50000, "reward": { "type": "polymer", "amount": 3000 } },
+
+    { "id": "D66", "type": "accumulate", "level": 1, "desc": "Накопить {target} отработки", "target": 300, "reward": { "type": "purified", "amount": 1 } },
+    { "id": "D67", "type": "accumulate", "level": 2, "desc": "Накопить {target} отработки", "target": 800, "reward": { "type": "purified", "amount": 2 } },
+    { "id": "D68", "type": "accumulate", "level": 3, "desc": "Накопить {target} отработки", "target": 2000, "reward": { "type": "purified", "amount": 4 } },
+    { "id": "D69", "type": "accumulate", "level": 4, "desc": "Накопить {target} отработки", "target": 5000, "reward": { "type": "purified", "amount": 8 } },
+    { "id": "D70", "type": "accumulate", "level": 5, "desc": "Накопить {target} отработки", "target": 15000, "reward": { "type": "purified", "amount": 15 } },
+
+    { "id": "D71", "type": "spend_energy", "level": 1, "desc": "Потратить {target} энергии", "target": 20, "reward": { "type": "polymer", "amount": 200 } },
+    { "id": "D72", "type": "spend_energy", "level": 2, "desc": "Потратить {target} энергии", "target": 40, "reward": { "type": "polymer", "amount": 400 } },
+    { "id": "D73", "type": "spend_energy", "level": 3, "desc": "Потратить {target} энергии", "target": 60, "reward": { "type": "polymer", "amount": 600 } },
+    { "id": "D74", "type": "spend_energy", "level": 4, "desc": "Потратить {target} энергии", "target": 80, "reward": { "type": "polymer", "amount": 800 } },
+    { "id": "D75", "type": "spend_energy", "level": 5, "desc": "Потратить {target} энергии", "target": 100, "reward": { "type": "polymer", "amount": 1000 } }
   ],
-  "passTasks": [
-    { "id": "P1", "type": "harvest", "desc": "Добыть {target} отработки", "reward": { "type": "tickets", "amount": 20 } },
-    { "id": "P2", "type": "buy_robots", "desc": "Нанять {target} роботов", "reward": { "type": "tickets", "amount": 25 } },
-    { "id": "P3", "type": "survive_collapse", "desc": "Пережить 1 коллапс", "reward": { "type": "tickets", "amount": 30 } },
-    { "id": "P4", "type": "playtime", "desc": "Провести {target} мин в игре", "reward": { "type": "tickets", "amount": 25 } },
-    { "id": "P5", "type": "spend_energy", "desc": "Потратить {target} энергии", "reward": { "type": "tickets", "amount": 20 } },
-    { "id": "P6", "type": "convert", "desc": "Конвертировать {target} полимера", "reward": { "type": "tickets", "amount": 25 } },
-    { "id": "P7", "type": "clicks", "desc": "Нажать кнопку {target} раз", "reward": { "type": "tickets", "amount": 15 } },
-    { "id": "P8", "type": "accumulate", "desc": "Накопить {target} отработки", "reward": { "type": "tickets", "amount": 20 } },
-    { "id": "P9", "type": "shop_buy", "desc": "Купить 1 улучшение", "reward": { "type": "tickets", "amount": 25 } },
-    { "id": "P10", "type": "buy_multiple", "desc": "Нанять 10 роботов", "reward": { "type": "tickets", "amount": 30 } },
-    { "id": "P11", "type": "survive_collapse_x2", "desc": "Пережить 2 коллапса", "reward": { "type": "tickets", "amount": 35 } },
-    { "id": "P12", "type": "playtime_long", "desc": "Провести {target} мин в игре", "reward": { "type": "tickets", "amount": 30 } },
-    { "id": "P13", "type": "convert_mass", "desc": "Конвертировать 500 отработки в полимер", "reward": { "type": "tickets", "amount": 25 } },
-    { "id": "P14", "type": "accumulate_long", "desc": "Накопить {target} отработки (30 мин без трат)", "reward": { "type": "tickets", "amount": 30 } },
-    { "id": "P15", "type": "clicks", "desc": "Нажать кнопку {target} раз", "reward": { "type": "tickets", "amount": 20 } },
-    { "id": "P16", "type": "harvest_large", "desc": "Добыть {target} отработки", "reward": { "type": "tickets", "amount": 20 } },
-    { "id": "P17", "type": "buy_robots_large", "desc": "Нанять 15 роботов", "reward": { "type": "tickets", "amount": 30 } },
-    { "id": "P18", "type": "shop_buy_x2", "desc": "Купить 2 улучшения", "reward": { "type": "tickets", "amount": 30 } },
-    { "id": "P19", "type": "spend_energy_large", "desc": "Потратить {target} энергии", "reward": { "type": "tickets", "amount": 25 } },
-    { "id": "P20", "type": "convert_precise", "desc": "Конвертировать {target} полимера", "reward": { "type": "tickets", "amount": 25 } }
-  ],
+  "passTasks": [],
   "socialTasks": [
-    { "id": "S1", "type": "subscribe", "desc": "Подписаться на официальный канал Polymeria", "target": "@Polymeriacccp", "reward": { "type": "stars", "amount": 1 } },
-    { "id": "S2", "type": "join_chat", "desc": "Вступить в официальный чат Polymeria", "target": "@PolymeriacccpChat", "reward": { "type": "stars", "amount": 1 } }
+    { "id": "S1", "type": "subscribe", "desc": "Подписаться на официальный канал Polymeria", "target": "@polymeriacccp", "reward": { "type": "stars", "amount": 1 } },
+    { "id": "S2", "type": "join_chat", "desc": "Вступить в официальный чат Polymeria", "target": "@polymeriacccpChat", "reward": { "type": "stars", "amount": 1 } }
   ],
   "investorTasks": [
-    { "id": "I1", "type": "subscribe", "desc": "🔥 Подписаться на канал Новости с дивана", "target": "@news_divan_roman", "reward": { "type": "stars", "amount": 1 } }
+    { "id": "I1", "type": "subscribe", "desc": "🔥Подписаться на канал Новости с дивана", "target": "@news_divan_roman", "reward": { "type": "stars", "amount": 1 } }
   ]
 }

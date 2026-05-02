@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Polymeria — Завод</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
 </head>
 <body>
 
@@ -22,6 +19,10 @@
         <button onclick="location.reload()" style="margin-top:12px;padding:10px 24px;background:#2a0000;border:1px solid #cc0000;border-radius:4px;color:#cc0000;font-family:monospace;font-size:0.7em;">ПЕРЕЗАГРУЗИТЬ</button>
     </div>
 </div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
 
 <div id="app">
     <div id="tab-control" class="tab-content active">
@@ -66,12 +67,6 @@
             <div class="indicator"><span class="indicator-label">Цена</span><span class="indicator-value" id="robot-cost">10</span></div>
         </div>
         <button id="btn-buy-robot" class="toggle-switch"><span class="switch-knob"></span> ПРИОБРЕСТИ РОБОТА</button>
-        <div class="conversion-section">
-            <div class="conversion-info">
-                <span>Очистка: 100 отработки + 10 энергии → 1 полимер</span>
-                <button id="btn-convert" class="toggle-switch" style="margin-top:6px;"><span class="switch-knob"></span> ОЧИСТИТЬ</button>
-            </div>
-        </div>
     </div>
 
     <div class="panel status-panel">
@@ -84,7 +79,6 @@
 
     </div>
 
-    <!-- ЗАДАЧИ -->
     <div id="tab-tasks" class="tab-content hidden">
         <div class="panel tasks-panel">
             <h2>СТАХАНОВСКИЙ БИЛЕТ</h2>
@@ -97,38 +91,69 @@
                 <div class="pass-progress hidden" id="pass-progress-block"><div class="pass-fill" id="pass-fill" style="width:0%"></div></div>
                 <div class="pass-tickets hidden" id="pass-tickets-block"><span id="pass-tickets">0</span>/100 БП</div>
                 <div class="pass-reward hidden" id="pass-reward-block">Награда: <span id="pass-reward-text">—</span></div>
-                <button class="pass-buy-btn hidden" id="btn-buy-pass">КУПИТЬ ЗА 150 ЗВЁЗД</button>
-                <button class="pass-claim-btn hidden" id="btn-claim-pass">ЗАБРАТЬ НАГРАДУ</button>
+                <button class="pass-buy-btn hidden" id="btn-buy-pass">КУПИТЬ ЗА 150⭐️</button>
             </div>
 
-            <div class="task-block" id="pass-tasks-block"><h3>Задачи Pass (5 в день)</h3><div id="pass-tasks-list"></div></div>
-            <div class="task-block" id="daily-tasks-block"><h3>Ежедневные задания (5 в день)</h3><div id="daily-tasks-list"></div></div>
-            <div class="task-block" id="social-tasks-block"><h3>Социальные задачи</h3><div id="social-tasks-list"></div></div>
+            <div class="task-block" id="pass-tasks-block">
+                <h3>Задачи Pass</h3>
+                <div id="pass-tasks-list"></div>
+            </div>
+            <div class="task-block" id="daily-tasks-block">
+                <h3>Ежедневные задания</h3>
+                <div id="daily-tasks-list"></div>
+            </div>
+<div class="task-block" id="social-tasks-block">
+                <h3>Социальные задачи</h3>
+                <div id="social-tasks-list"></div>
+            </div>
             <div class="task-block" id="investor-tasks-block">
                 <h3>Задачи Инвестора</h3>
-                <div id="investor-tasks-list"></div>
                 <div class="investor-placeholder">
-                    <img src="investor.png" alt="Инвестору" onerror="this.style.display='none'">
+                    <img src="images/investor.png" alt="Инвестору" onerror="this.style.display='none'">
                     <p>Этому заводу нужен инвестор</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- МАГАЗИН -->
-    <div id="tab-shop" class="tab-content hidden">
+<div id="tab-shop" class="tab-content hidden">
         <div class="panel shop-panel">
             <h2>МАГАЗИН</h2>
             <div class="shop-balance">Доступно звёзд: <span id="shop-stars">0</span></div>
+
             <div class="shop-section">
-                <h3>Бустеры</h3>
-                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">Удвоение дохода</span><span class="shop-item-desc">x2 на 1 час</span></div><button class="shop-item-btn">15 звёзд</button></div>
-                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">Мгновенные роботы</span><span class="shop-item-desc">+5 роботов</span></div><button class="shop-item-btn">15 звёзд</button></div>
+                <div class="shop-pass-card" id="shop-pass-card">
+                    <div class="shop-pass-title">СТАХАНОВСКИЙ БИЛЕТ</div>
+                    <div class="shop-pass-desc">Сезон 1 • 100 уровней • 60 дней</div>
+                    <div class="shop-pass-price">150 звёзд</div>
+                    <button class="shop-pass-btn" id="btn-buy-pass-shop">КУПИТЬ</button>
+                </div>
+                <div class="shop-pass-card hidden" id="shop-pass-active">
+                    <div class="shop-pass-title" style="color:#00ffcc;">БИЛЕТ АКТИВЕН</div>
+                    <div class="shop-pass-desc">Уровень <span id="shop-pass-level">1</span>/100</div>
+                </div>
             </div>
+
             <div class="shop-section">
-                <h3>Улучшения</h3>
-                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">Усиление клика</span><span class="shop-item-desc">+2 к добыче</span></div><button class="shop-item-btn">20 звёзд</button></div>
+                <h3>СПЕЦПРЕДЛОЖЕНИЕ <span class="shop-timer" id="special-timer"></span></h3>
+                <div class="shop-item special-item" id="special-offer">
+                    <div class="shop-item-info">
+                        <span class="shop-item-name" id="special-name">—</span>
+                        <span class="shop-item-desc" id="special-desc">—</span>
+                    </div>
+                    <button class="shop-item-btn gold" id="btn-buy-special">—</button>
+                </div>
             </div>
+
+            <div class="shop-section">
+                <h3>БУСТЕРЫ ЗА РЕКЛАМУ</h3>
+                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">+10 энергии</span><span class="shop-item-desc">Восстановление</span></div><button class="shop-item-btn ad-btn" data-ad="energy">СМОТРЕТЬ</button></div>
+                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">x2 доход на 30 мин</span><span class="shop-item-desc">Удвоение</span></div><button class="shop-item-btn ad-btn" data-ad="boost">СМОТРЕТЬ</button></div>
+                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">+500 отработки</span><span class="shop-item-desc">Ресурсы</span></div><button class="shop-item-btn ad-btn" data-ad="polymer">СМОТРЕТЬ</button></div>
+                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">+2 робота</span><span class="shop-item-desc">Рабочие руки</span></div><button class="shop-item-btn ad-btn" data-ad="robots">СМОТРЕТЬ</button></div>
+                <div class="shop-item"><div class="shop-item-info"><span class="shop-item-name">+5 полимера</span><span class="shop-item-desc">Очищенный</span></div><button class="shop-item-btn ad-btn" data-ad="purified">СМОТРЕТЬ</button></div>
+            </div>
+
             <div class="shop-section">
                 <h3>Промокод</h3>
                 <div class="promo-box">
@@ -140,11 +165,10 @@
         </div>
     </div>
 
-    <!-- ПРОФИЛЬ -->
     <div id="tab-profile" class="tab-content hidden">
         <div class="panel profile-panel">
             <div class="profile-header">
-                <div class="profile-photo" id="profile-photo-container"><img src="engineer.png" alt="Инженер" id="profile-photo-img"></div>
+                <div class="profile-photo" id="profile-photo-container"><img src="images/engineer.png" alt="Инженер" id="profile-photo-img"></div>
                 <div class="profile-name" id="profile-name">Инженер Полимерия-1</div>
                 <div class="profile-rank">Дежурный 3-й смены</div>
             </div>
@@ -153,6 +177,10 @@
                 <div class="profile-stat"><span class="profile-stat-label">Отработка</span><span class="profile-stat-value" id="profile-polymer">0</span></div>
                 <div class="profile-stat"><span class="profile-stat-label">Полимер</span><span class="profile-stat-value" id="profile-purified">0</span></div>
                 <div class="profile-stat"><span class="profile-stat-label">Роботов</span><span class="profile-stat-value" id="profile-robots">0</span></div>
+            </div>
+            <div class="profile-conversion">
+                <div class="conversion-row"><span>100 отработки + 10 энергии → 1 полимер</span><button id="btn-convert-profile" class="toggle-switch" style="padding:8px;font-size:0.7em;"><span class="switch-knob"></span> ОЧИСТИТЬ</button></div>
+                <div class="conversion-row"><span>1000 полимера → 1 звезда</span><button id="btn-exchange-stars" class="toggle-switch" style="padding:8px;font-size:0.7em;"><span class="switch-knob"></span> ОБМЕНЯТЬ</button></div>
             </div>
             <div class="profile-actions">
                 <button class="profile-btn gold" id="btn-daily-bonus">СУТОЧНЫЙ БОНУС</button>
@@ -170,21 +198,34 @@
             <div class="intro-header">
                 <span class="intro-stamp">СОВЕРШЕННО СЕКРЕТНО</span>
                 <h2>ЛИЧНОЕ ДЕЛО ИНЖЕНЕРА</h2>
-                <div class="intro-photo"><div class="photo-real"><img src="engineer.png" alt="Инженер Polymeria" class="engineer-photo"><div class="photo-stamp">ДОПУЩЕН</div></div></div>
+                <div class="intro-photo"><div class="photo-real"><img src="images/engineer.png" alt="Инженер Polymeria" class="engineer-photo"><div class="photo-stamp">ДОПУЩЕН</div></div></div>
             </div>
             <div class="intro-text">
                 <p><strong>Доброго времени суток!</strong></p>
-                <p>Я — это ты. Номер бригады: <strong>Полимерия-1</strong>.</p>
+                <p>Я — это ты. Твоя фамилия в приказе не указана, но номер бригады известен: <strong>Полимерия-1</strong>.</p>
                 <p>Наша задача: <strong>выполнить план пятилетки досрочно</strong>.</p>
                 <ul>
                     <li><strong>Красная кнопка</strong> — ручная добыча.</li>
-                    <li><strong>Роботы</strong> — твоя смена.</li>
+                    <li><strong>Роботы-сборщики</strong> — твоя смена.</li>
                     <li><strong>Очистка</strong> — 100 отработки + 10 энергии → 1 полимер.</li>
                     <li><strong>Коллапс</strong> — 4 раза в сутки.</li>
                 </ul>
                 <p class="intro-signature">С приветом,<br>ты сам.</p>
             </div>
             <button id="btn-start-shift" class="big-red-button" style="font-size:1.2em;padding:14px;margin:0 16px 16px;width:calc(100% - 32px);">ПРИНЯТЬ СМЕНУ</button>
+        </div>
+    </div>
+
+    <div id="ad-modal" class="modal hidden">
+        <div class="modal-content ad-content">
+            <h2>СПОНСОР ПОКАЗА</h2>
+            <div class="ad-banner">
+                <p><strong>Новости с дивана</strong></p>
+                <p style="font-size:0.7em;color:#888;">Политика, технологии, игры</p>
+            </div>
+            <div class="ad-timer" id="ad-timer">30 сек</div>
+            <button class="ad-link-btn" id="btn-ad-link">ПЕРЕЙТИ В КАНАЛ</button>
+            <button class="ad-claim-btn hidden" id="btn-ad-claim">ПОЛУЧИТЬ НАГРАДУ</button>
         </div>
     </div>
 
@@ -196,26 +237,12 @@
     </nav>
 </div>
 
-<script src="js/loading.js"></script>
-<script src="js/save.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/resources.js"></script>
-<script src="js/pass.js"></script>
-<script src="js/tasks.js"></script>
-<script src="js/promo.js"></script>
-<script src="js/bonus.js"></script>
-<script src="js/profile.js"></script>
-<script src="js/navigation.js"></script>
-<script src="js/intro.js"></script>
-<script src="js/core.js"></script>
+<script src="main.js"></script>
 <script src="collapse.js"></script>
 <script src="telegram.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Ждём загрузки всех модулей
-        setTimeout(() => {
-            if (window.Polymeria && window.Polymeria.init) window.Polymeria.init();
-        }, 200);
+        if (window.Polymeria && window.Polymeria.init) window.Polymeria.init();
     });
 </script>
 </body>
